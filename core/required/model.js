@@ -364,6 +364,13 @@ module.exports = (function() {
 
     }
 
+   /**
+    * Specifies joinsTo for the child model
+    */
+    static joinedBy(Model, options) {
+       return Model.joinsTo && Model.joinsTo(this, options);
+     }
+
     /**
     * Sets a joins relationship for the Model. Sets joinedBy relationship for parent.
     * @param {class Nodal.Model} Model The Model class which your current model belongs to
