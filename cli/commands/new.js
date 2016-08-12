@@ -12,6 +12,9 @@ module.exports = (() => {
   const async = require('async');
   const http = require('http');
 
+  const log4js = require('log4js');  
+  const logger = log4js.getLogger('Install');
+
   class NewCommand extends Command {
 
     constructor() {
@@ -31,15 +34,14 @@ module.exports = (() => {
     run(args, flags, vflags, callback) {
 
       if (fs.existsSync('./.nodal')) {
-        return callback(new Error('Nodal project already exists in this directory'));
+        logger.error('Nodal project already exists in this directory');
+        return callback(null);
       }
 
       const rootPath = path.resolve(__dirname);
       const version = require('../../package.json').version;
 
-      console.log('');
-      console.log(`Welcome to ${colors.bold.green('Nodal! v' + version)}`);
-      console.log('');
+      logger.info(`Welcome to ${colors.bold('Nodal! v' + version)}`);      
 
       let data = {
         name: args[0] ? (args[0] + '').replace(/_/g, ' ') : '',
@@ -81,17 +83,16 @@ module.exports = (() => {
 
         let dirname = promptResult.name.replace(/[^A-Za-z0-9-_]/gi, '-').toLowerCase();
 
-        console.log('Creating directory "' + dirname + '"...');
-        console.log('');
-
+        logger.info(`Creating directory "${colors.bold(dirname)}"...`);        
+        
         if (fs.existsSync('./' + dirname)) {
-          callback(new Error('Directory "' + dirname + '" already exists, try a different project name'));
+            logger.error(`Directory "${colors.bold(dirname)}" already exists, try a different project name`);
+            callback(null);
         }
 
         fs.mkdirSync('./' + dirname);
 
-        console.log('Copying Nodal directory structure and files...');
-        console.log('');
+        logger.info(`Copying Nodal directory structure and files...`);
 
         fs.copy(rootPath + '/../../src', './' + dirname, function(err) {
 
@@ -132,7 +133,7 @@ module.exports = (() => {
             copyNodeModules.map(m => {
               return (callback) => {
 
-                console.log(`Copying ${m}...`);
+                logger.info(`Copying ${m}...`);
                 fs.copy(
                   path.join(rootPath, '..', '..', m),
                   path.join(process.cwd(), dirname, 'node_modules', 'nodal', m),
@@ -148,17 +149,11 @@ module.exports = (() => {
               }
 
               if (!data.ignoreOutput) {
-                console.log('');
-                console.log(colors.bold.green('All done!'));
-                console.log('');
-                console.log('Your new Nodal project, ' + colors.bold(promptResult.name) + ', is ready to go! :)');
-                console.log('');
-                console.log('Have fun ' + promptResult.author + ', and check out https://github.com/keithwhor/nodal for the most up-to-date Nodal information')
-                console.log('');
-                console.log(colors.bold('Pro tip: ') + 'You can try running your server right away with:');
-                console.log('');
-                console.log('  cd ' + dirname + ' && nodal s');
-                console.log('');
+                logger.info(colors.bold.green('All done!'));
+                logger.info(`Your new Nodal project, ${colors.bold(promptResult.name)}, is ready to go! :)`);
+                logger.info(`Have fun ${promptResult.author}, and check out https://github.com/keithwhor/nodal for the most up-to-date Nodal information`)
+                logger.info(`${colors.bold('Pro tip: ')} You can try running your server right away with:`);
+                logger.info(`$ cd ${dirname} && nodal s`);
               }
 
               callback(null);
