@@ -1,6 +1,8 @@
 /**
- * Controller {{= data.name }}
- * 
+ * Controller: {{= data.name }}
+ *
+ * @author {{=data.author }}
+ * @since {{=data.since }}  
  */
 module.exports = (function() {
   'use strict';
@@ -9,11 +11,11 @@ module.exports = (function() {
   const {{= data.for.name }} = Nodal.require('{{= data.for.path }}');{{?}}
   
   class {{= data.name }} extends Nodal.Controller {
-      /**
-       * index (get all) 
-       * 
-       */
-    {{? data.for }}index() {
+  {{? data.for }}
+   /**
+    * Method: Index (get all)       
+    */
+    index() {
       {{= data.for.name }}.query()
         .where(this.params.query)
         .end((err, models) => {
@@ -21,8 +23,7 @@ module.exports = (function() {
         });
     }
     /**
-     * Show (get by id) 
-     * 
+     * Method: Show (get by id)       
      */
     show() {
       {{= data.for.name }}.find(this.params.route.id, (err, model) => {
@@ -30,8 +31,7 @@ module.exports = (function() {
       });
     }
     /**
-     * Create (post) 
-     * 
+     * Method:  Create (post)       
      */
     create() {
       {{= data.for.name }}.create(this.params.body, (err, model) => {
@@ -39,8 +39,7 @@ module.exports = (function() {
       });
     }
     /**
-     * update (put) 
-     * 
+     * Method: Update (put) 
      */
     update() {
       {{= data.for.name }}.update(this.params.route.id, this.params.body, (err, model) => {
@@ -48,35 +47,30 @@ module.exports = (function() {
       });
     }
     /**
-     * destroy (del) 
-     * 
+     * Method: Destroy (del)      
      */
     destroy() {
       {{= data.for.name }}.destroy(this.params.route.id, (err, model) => {
         this.respond(err || model);
       });
-    }{{??}}get() {
+    }
+    {{??}}
+
+    get() {
       this.respond({message: `GET request to ${this.constructor.name}`});
     }
     
     post() {
-
       this.badRequest();
-
     }
 
     put() {
-
       this.badRequest();
-
     }
 
     del() {
-
       this.badRequest();
-
     }{{?}}
-
   }
 
   return {{= data.name }};
