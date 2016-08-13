@@ -15,9 +15,6 @@ module.exports = (() => {
 
   const MIGRATION_PATH = './db/migrations';
 
-  const log4js = require('log4js');
-  const logger = log4js.getLogger('Db');
-
   class Bootstrapper {
 
     constructor() {
@@ -52,12 +49,10 @@ module.exports = (() => {
 
     create(callback) {
       this.rootDb().create(this.cfg.database, callback);
-       logger.info("create");
 
     }
 
     drop(callback) {
-        logger.info("drop");
       this.rootDb().drop(this.cfg.database, callback);
 
     }
@@ -91,7 +86,6 @@ module.exports = (() => {
             schema.save();
 
             callback(null, `Prepared database "${db.adapter._config.database}" for migrations`);
-            logger.info("prepare");
 
           }
         );
@@ -214,7 +208,6 @@ module.exports = (() => {
                   return callback(err);
                 }
                 callback(null, 'Migration completed successfully');
-                logger.info("migrate");
 
               }
             );
@@ -281,7 +274,6 @@ module.exports = (() => {
               if (err) {
                 return callback(new Error('Migration rollback could not be completed'));
               }
-              logger.info("rollback");
               callback(null, 'Migration rollback complete!');
 
             }
@@ -308,7 +300,6 @@ module.exports = (() => {
         if (!seed) {
           return callback(new Error('Could not seed, no seed found in "./config/seed.json". Please make sure JSON is correct.'));
         }
-        logger.info("seed");
         return ModelFactory.populate(seed, callback);
 
       });

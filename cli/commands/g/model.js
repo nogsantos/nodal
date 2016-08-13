@@ -12,8 +12,7 @@ module.exports = (() => {
     const colors = require('colors/safe');
     const inflect = require('i')();
 
-    const log4js = require('log4js');
-    const logger = log4js.getLogger('Model');
+    const log = require('log4js').getLogger('Model');
 
     const dot = require('dot');
     let templateSettings = Object.keys(dot.templateSettings).reduce((o, k) => {
@@ -64,8 +63,7 @@ module.exports = (() => {
             v = v.split(':');
 
             if (Object.keys(db.adapter.types).indexOf(v[1].toLowerCase()) == -1) {
-                logger.error(`Un-supported column type ${colors.yellow.bold(v[1])} for field ${colors.yellow.bold(v[0])}`)
-                throw new Error();
+                throw new Error(log.error(`Unsupported column type ${colors.yellow.bold(v[1])} for field ${colors.yellow.bold(v[0])}`));
             }
 
             let obj = { name: inflect.underscore(v[0]), type: v[1].toLowerCase() };
@@ -90,8 +88,7 @@ module.exports = (() => {
 
         let tableName = inflect.tableize(modelName);
         if (propertyList.filter(c => c.name === tableName).length) {
-            logger.error(`Can not create a table with an identical field name. (${tableName}.${tableName})`);
-            throw new Error();
+            throw new Error(log.error(`Can not create a table with an identical field name. (${tableName}.${tableName})`));
         }
 
         return {
@@ -143,7 +140,7 @@ module.exports = (() => {
             }
 
             if (!args.length) {
-                logger.error("No model name specified.");
+                log.error("No model name specified.");
                 return callback(null);
             }
 
@@ -161,8 +158,7 @@ module.exports = (() => {
             let createPath = modelDir + '/' + inflect.underscore(modelName) + '.js';
 
             if (fs.existsSync(createPath)) {
-                logger.error('Model already exists')
-                return callback(null);
+                return callback(log.error('Model already exists'));
             }
 
             if (vflags.hasOwnProperty('user')) {
@@ -176,10 +172,10 @@ module.exports = (() => {
             } else {
 
                 fs.writeFileSync(createPath, generateModelDefinition(modelName));
-                logger.info(`${colors.bold('Great!')} Now you can generate a controller for this model, just run: ${colors.bold.blue("$ nodal g:controller --for "+modelName)}`);
+                log.info(`${colors.bold('Great!')} Now, if necessary, you can generate a Controller for this Model, just run: ${colors.bold.blue("$ nodal g:controller [optional version] --for "+modelName)}`);
             }
 
-            logger.info(colors.green.bold('Create: ') + createPath);
+            log.info(colors.green.bold('Create: ') + createPath);
 
             generateMigration.run([`create_${schemaObject.table}`], {}, { for: args }, (err, result) => {
 
@@ -189,7 +185,7 @@ module.exports = (() => {
 
                 if (vflags.hasOwnProperty('user')) {
 
-                    logger.info('Installing additional packages in this directory...');
+                    log.info('Installing additional packages in this directory...');
 
                     let spawn = require('cross-spawn-async');
                     let child = spawn('npm', ['install', 'bcrypt', '--save'], { cwd: process.cwd(), stdio: 'inherit' });

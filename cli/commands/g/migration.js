@@ -11,6 +11,8 @@ module.exports = (() => {
   const colors = require('colors/safe');
   const dot = require('dot');
 
+  const log = require('log4js').getLogger('Model');
+
   let templateSettings = Object.keys(dot.templateSettings).reduce((o, k) => {
     o[k] = dot.templateSettings[k];
     return o;
@@ -76,12 +78,12 @@ module.exports = (() => {
     let migrationPath = migrationDir + '/' + migrationFileName;
 
     if (fs.existsSync(migrationPath)) {
-      throw new Error('Migration already exists');
+      throw new Error(log.fatal('Migration already exists'));
     }
 
     fs.writeFileSync(migrationPath, composeMigration(up, down)(migrationName, id));
 
-    console.log(colors.green.bold('Create: ') + migrationPath);
+    log.info(colors.green.bold('Create: ') + migrationPath);
 
   }
 
@@ -96,7 +98,7 @@ module.exports = (() => {
       v = v.split(':');
 
       if (Object.keys(db.adapter.types).indexOf(v[1].toLowerCase()) == -1) {
-        throw new Error(`Un-supported column type ${colors.yellow.bold(v[1])} for field ${colors.yellow.bold(v[0])}`);
+        throw new Error(log.fatal(`Un-supported column type ${colors.yellow.bold(v[1])} for field ${colors.yellow.bold(v[0])}`));
       }
 
       let obj = {name: inflect.underscore(v[0]), type: v[1].toLowerCase()};
@@ -151,7 +153,7 @@ module.exports = (() => {
       let migrationName = inflect.camelize(args[0]);
 
       if (!migrationName) {
-        throw new Error('Migration name not specified');
+        throw new Error(log.fatal('Migration name not specified'));
       }
 
       let up = [];

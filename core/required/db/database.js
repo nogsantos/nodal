@@ -3,6 +3,8 @@ module.exports = (() => {
   'use strict';
 
   const colors = require('colors/safe');
+  
+  const log = require('log4js').getLogger('Db');
 
   const DEFAULT_ADAPTER = 'postgres';
   const ADAPTERS = {
@@ -43,11 +45,11 @@ module.exports = (() => {
 
       let colorFunc = this.__logColorFuncs[this._useLogColor];
 
-      console.log();
-      console.log(colorFunc(sql));
-      params && console.log(colorFunc(JSON.stringify(params)));
-      time && console.log(colorFunc(time + 'ms'));
-      console.log();
+
+      log.trace(colorFunc(sql));
+      params.length > 0 && log.trace(colorFunc(JSON.stringify(params)));
+      time.length > 0 && log.info(colorFunc(time + 'ms'));
+
 
       this._useLogColor = (this._useLogColor + 1) % this.__logColorFuncs.length;
 
@@ -57,7 +59,7 @@ module.exports = (() => {
 
     info(message) {
 
-      console.log(colors.green.bold('Database Info: ') + message);
+      log.info(colors.green.bold('Database Info: ') + message);
 
     }
 

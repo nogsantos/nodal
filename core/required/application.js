@@ -4,6 +4,7 @@ module.exports = (() => {
 
   const fxn = require('fxn');
   const API = require('./api.js');
+  const log = require('log4js').getLogger('Controller');
 
   class Application extends fxn.Application {
 
@@ -23,7 +24,7 @@ module.exports = (() => {
 
       let headers = {'Content-Type': 'application/json'};
 
-      err && console.log(err.stack);
+      err && log.error(err.stack);
 
       this.send(
         req,

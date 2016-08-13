@@ -9,8 +9,7 @@ module.exports = (() => {
   const colors = require('colors/safe');
   const inflect = require('i')();
 
-  const log4js = require('log4js');
-  const logger = log4js.getLogger('Controller');
+  const log = require('log4js').getLogger('Controller');
 
   const dot = require('dot');
   let templateSettings = Object.keys(dot.templateSettings).reduce((o, k) => {
@@ -26,7 +25,7 @@ module.exports = (() => {
 
     let controller = {
       name: controllerName,
-      for: forModel, 
+      for: forModel,
       since : new Date().toString(),
       author : process.env.USER
     };
@@ -104,13 +103,13 @@ module.exports = (() => {
     }
 
     fs.writeFileSync('./app/router.js', routes.join('\n'));
-    
-    logger.info(`${colors.bold.green('Modify:')} ./app/router.js`);
+
+    log.info(`${colors.bold.green('Modify:')} ./app/router.js`);
 
   }
 
   class GenerateControllerCommand extends Command {
-          
+
     constructor() {
 
       super('g', 'controller');
@@ -130,9 +129,8 @@ module.exports = (() => {
     run(args, flags, vflags, callback) {
 
       if (!args.length && !vflags.for) {
-        logger.error("No controller path specified.");
-        return callback(null);
-      }      
+        return callback(log.error("No controller path specified."));
+      }
 
       let controllerPath = args[0] ? args[0].split('/') : [];
       let cd = controllerDir;
@@ -140,16 +138,15 @@ module.exports = (() => {
       let forModel = null;
 
       if (Object.keys(vflags).filter(key => key.substr(0, 4) === 'for:').length) {
-        logger.error("Syntax `--for:ModelName` removed. Use `--for ModelName` instead.");
-        return callback(null);
+        return callback(log.error("Syntax `--for:ModelName` removed. Use `--for ModelName` instead."));
       }
 
       if (vflags.for) {
-        var createModelLink = 'app/models/' + inflect.underscore(inflect.classify(vflags.for[0])) + '.js'; 
+        var createModelLink = 'app/models/' + inflect.underscore(inflect.classify(vflags.for[0])) + '.js';
         try {
-            fs.accessSync(createModelLink, fs.constants.F_OK);
+            fs.accessSync(createModelLink);
         } catch (e) {
-            logger.warn(`${colors.bold.yellow("Atention:")} You must create a model to this controller! Run: ${colors.italic.blue("$ nodal g:model [ModelName] [field]:[tipe] ...")}`);                        
+            log.warn(`${colors.bold.yellow("Attention:")} You must create a model for this controller. Run: ${colors.italic.blue(`$ nodal g:model ${vflags.for[0]} [field]:[tipe] ...`)}`);
         }
 
         forModel = {
@@ -175,8 +172,7 @@ module.exports = (() => {
       let createPath = [controllerDir].concat(fullControllerPath).join('/');
 
       if (fs.existsSync(createPath)) {
-        logger.error("Controller already exists");        
-        return callback(null);
+        return callback(log.error("Controller already exists"));
       }
 
       while (controllerPath.length && (cd += '/' + controllerPath.shift()) && !fs.existsSync(cd)) {
@@ -185,8 +181,8 @@ module.exports = (() => {
       }
 
       fs.writeFileSync(createPath, generateController(fullControllerName, forModel));
-    
-      logger.info(`${colors.bold.green("Create: ")} ${createPath}`);
+
+      log.info(`${colors.bold.green("Create: ")} ${createPath}`);
 
       generateRoute(fullControllerName, fullControllerPath, controllerRoute);
 
