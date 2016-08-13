@@ -10,7 +10,7 @@ module.exports = (function() {
   const pg = require('pg');
   pg.defaults.poolSize = 8;
 
-  const log = require('log4js').getLogger('Db');
+  const log = require('log4js').getLogger('DataBase');
 
   class PostgresAdapter extends SQLAdapter {
 

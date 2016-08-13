@@ -4,7 +4,7 @@ module.exports = (() => {
 
   const colors = require('colors/safe');
   
-  const log = require('log4js').getLogger('Db');
+  const log = require('log4js').getLogger('DataBase');
 
   const DEFAULT_ADAPTER = 'postgres';
   const ADAPTERS = {

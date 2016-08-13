@@ -10,7 +10,7 @@ module.exports = (function() {
   const colors = require('colors/safe');
   const inflect = require('i')();
 
-  const log = require('log4js').getLogger('Db');
+  const log = require('log4js').getLogger('DataBase');
 
   class Migration {
 

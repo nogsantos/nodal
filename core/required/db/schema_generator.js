@@ -5,7 +5,7 @@ module.exports = (function() {
   const fs = require('fs');
   const inflect = require('i')();
 
-  const log = require('log4js').getLogger('Db'); 
+  const log = require('log4js').getLogger('DataBase'); 
 
   class SchemaGenerator {
 

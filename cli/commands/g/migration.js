@@ -11,7 +11,7 @@ module.exports = (() => {
   const colors = require('colors/safe');
   const dot = require('dot');
 
-  const log = require('log4js').getLogger('Model');
+  const log = require('log4js').getLogger('Migration');
 
   let templateSettings = Object.keys(dot.templateSettings).reduce((o, k) => {
     o[k] = dot.templateSettings[k];
