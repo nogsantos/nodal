@@ -96,6 +96,37 @@ module.exports = (function() {
     }
 
     /**
+    * Finds a model with a provided object and a relationship. Returns the first found.
+    * @param {Object} object to query Ex.: {id: 1, user_id: 1 ...}
+    * @param {string} if has a relationship, join param can be used to set the relationship.
+    * @param {function({Error} err, {Nodal.Model} model)} callback The callback to execute upon completion
+    */
+    static findByWithJoin(objToSearch, joinField, callback) {
+		let query = {};
+		let k = "";
+		let v = [];
+		let count = 0;
+		let objLenght = Object.keys(objToSearch).length;
+		for (let key in objToSearch) {
+			let end = (++count !== objLenght) ? ',' : '';
+			k += `${key}${end}`;
+			v.push(objToSearch[key])
+		}
+		query[k] = v;
+		return new Composer(this)
+			.join(joinField)
+			.where(query)
+			.end((err, models) => {
+				if (!err && !models.length) {
+					let err = new Error(`Could not find ${this.name} with ${field} "${value}".`);
+					err.notFound = true;
+					return callback(err);
+				}
+				callback(err, models[0]);
+			});
+    }
+
+    /**
     * Creates a new model instance using the provided data.
     * @param {object} data The data to load into the object.
     * @param {function({Error} err, {Nodal.Model} model)} callback The callback to execute upon completion
@@ -279,14 +310,14 @@ module.exports = (function() {
 
           return null; // FIXME: Deprecated for relationships.
 
-          let key = Object.keys(r)[0];
-          let relationship = this.joinInformation(key);
+        //   let key = Object.keys(r)[0];
+        //   let relationship = this.joinInformation(key);
 
-          if (!relationship) {
-            return null;
-          }
+        //   if (!relationship) {
+        //     return null;
+        //   }
 
-          return relationship.Model.toResource(r[key]);
+        //   return relationship.Model.toResource(r[key]);
 
         }
 
