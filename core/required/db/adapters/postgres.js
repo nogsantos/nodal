@@ -10,6 +10,8 @@ module.exports = (function() {
   const pg = require('pg');
   pg.defaults.poolSize = 8;
 
+  const log = require('log4js').getLogger('DataBase');
+
   class PostgresAdapter extends SQLAdapter {
 
     constructor(db, cfg) {
@@ -32,15 +34,15 @@ module.exports = (function() {
     query(query, params, callback) {
 
       if (arguments.length < 3) {
-        throw new Error('.query requires 3 arguments');
+        throw new Error(log.fatal('.query requires 3 arguments'));
       }
 
       if (!(params instanceof Array)) {
-        throw new Error('params must be a valid array');
+        throw new Error(log.fatal('params must be a valid array'));
       }
 
       if(typeof callback !== 'function') {
-        throw new Error('Callback must be a function');
+        throw new Error(log.fatal('Callback must be a function'));
       }
 
       let start = new Date().valueOf();
@@ -70,7 +72,7 @@ module.exports = (function() {
     transaction(preparedArray, callback) {
 
       if (!preparedArray.length) {
-        throw new Error('Must give valid array of statements (with or without parameters)');
+        throw new Error(log.fatal('Must give valid array of statements (with or without parameters)'));
       }
 
       if (typeof preparedArray === 'string') {

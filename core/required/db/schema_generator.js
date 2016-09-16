@@ -5,6 +5,8 @@ module.exports = (function() {
   const fs = require('fs');
   const inflect = require('i')();
 
+  const log = require('log4js').getLogger('DataBase'); 
+
   class SchemaGenerator {
 
     constructor(db) {
@@ -99,11 +101,11 @@ module.exports = (function() {
       let tableClass = modelName || inflect.classify(table);
 
       if (this.models[tableClass]) {
-        throw new Error('Model with name "' + tableClass + '" already exists in your schema');
+        throw new Error(log.fatal('Model with name "' + tableClass + '" already exists in your schema'));
       }
 
       if (this.findClass(table)) {
-        throw new Error('Table with name "' + table + '" already exists in your schema.');
+        throw new Error(log.fatal('Table with name "' + table + '" already exists in your schema.'));
       }
 
       arrColumnData = arrColumnData.slice();
@@ -144,7 +146,7 @@ module.exports = (function() {
       let tableClass = this.findClass(table);
 
       if (!tableClass) {
-        throw new Error('Table "' + table + '" does not exist in your schema');
+        throw new Error(log.fatal('Table "' + table + '" does not exist in your schema'));
       }
 
       delete this.models[tableClass];
@@ -158,7 +160,7 @@ module.exports = (function() {
       let tableClass = this.findClass(table);
 
       if (!tableClass) {
-        throw new Error('Table "' + table + '" does not exist in your schema');
+        throw new Error(log.fatal('Table "' + table + '" does not exist in your schema'));
       }
 
       this.models[tableClass].table = newTableName;
@@ -186,7 +188,7 @@ module.exports = (function() {
       }).pop();
 
       if (!modelKey) {
-        throw new Error('Table "' + table + '" does not exist');
+        throw new Error(log.fatal('Table "' + table + '" does not exist'));
       }
 
       let schemaFieldData = models[modelKey].columns.filter(function(v) {
@@ -194,7 +196,7 @@ module.exports = (function() {
       }).pop();
 
       if (!schemaFieldData) {
-        throw new Error('Column "' + column + '" of table "' + table + '" does not exist');
+        throw new Error(log.fatal('Column "' + column + '" of table "' + table + '" does not exist'));
       }
 
       schemaFieldData.type = type;
@@ -217,7 +219,7 @@ module.exports = (function() {
       }).pop();
 
       if (!modelKey) {
-        throw new Error('Table "' + table + '" does not exist');
+        throw new Error(log.fatal('Table "' + table + '" does not exist'));
       }
 
       let modelSchema = models[modelKey];
@@ -227,7 +229,7 @@ module.exports = (function() {
       }).pop();
 
       if (schemaFieldData) {
-        throw new Error('Column "' + column + '" of table "' + table + '" already exists');
+        throw new Error(log.fatal('Column "' + column + '" of table "' + table + '" already exists'));
       }
 
       let columnData = {
@@ -250,7 +252,7 @@ module.exports = (function() {
       }).pop();
 
       if (!modelKey) {
-        throw new Error('Table "' + table + '" does not exist');
+        throw new Error(log.fatal('Table "' + table + '" does not exist'));
       }
 
       let modelSchema = models[modelKey];
@@ -258,7 +260,7 @@ module.exports = (function() {
       let columnIndex = modelSchema.columns.map(function(v, i) { return v.name; }).indexOf(column);
 
       if (columnIndex === -1) {
-        throw new Error('Column "' + column + '" of table "' + table + '" does not exist');
+        throw new Error(log.fatal('Column "' + column + '" of table "' + table + '" does not exist'));
       }
 
       modelSchema.columns.splice(columnIndex, 1);
@@ -275,7 +277,7 @@ module.exports = (function() {
       }).pop();
 
       if (!modelKey) {
-        throw new Error('Table "' + table + '" does not exist');
+        throw new Error(log.fatal('Table "' + table + '" does not exist'));
       }
 
       let modelSchema = models[modelKey];
@@ -285,7 +287,7 @@ module.exports = (function() {
       }).pop();
 
       if (!schemaFieldData) {
-        throw new Error('Column "' + column + '" of table "' + table + '" already exists');
+        throw new Error(log.fatal('Column "' + column + '" of table "' + table + '" already exists'));
       }
 
       schemaFieldData.name = newColumn;
@@ -299,7 +301,7 @@ module.exports = (function() {
       if (this.indices.filter(function(v) {
         return v.table === table && v.column === column;
       }).length) {
-        throw new Error(`Index already exists on column "${column}" of table "${table}"`);
+        throw new Error(log.fatal(`Index already exists on column "${column}" of table "${table}"`));
       }
 
       this.indices.push({table: table, column: column, type: type});
@@ -324,11 +326,11 @@ module.exports = (function() {
       let referenceTableClass = inflect.classify(referenceTable);
 
       if (!this.models[tableClass]) {
-        throw new Error(`Model ${tableClass} does not exist.`);
+        throw new Error(log.fatal(`Model ${tableClass} does not exist.`));
       }
 
       if (!this.models[referenceTableClass]) {
-        throw new Error(`Model ${referenceTableClass} does not exist.`);
+        throw new Error(log.fatal(`Model ${referenceTableClass} does not exist.`));
       }
 
       return true;
@@ -341,11 +343,11 @@ module.exports = (function() {
       let referenceTableClass = inflect.classify(referenceTable);
 
       if (!this.models[tableClass]) {
-        throw new Error(`Model ${tableClass} does not exist.`);
+        throw new Error(log.fatal(`Model ${tableClass} does not exist.`));
       }
 
       if (!this.models[referenceTableClass]) {
-        throw new Error(`Model ${referenceTableClass} does not exist.`);
+        throw new Error(log.fatal(`Model ${referenceTableClass} does not exist.`));
       }
 
       return true;

@@ -10,12 +10,14 @@ module.exports = (function() {
   const colors = require('colors/safe');
   const inflect = require('i')();
 
+  const log = require('log4js').getLogger('DataBase');
+
   class Migration {
 
     constructor(db) {
 
       if (!db) {
-        throw new Error('Migration required valid database instance');
+        throw new Error(log.fatal('Migration required valid database instance'));
       }
 
       this.id = null;
@@ -170,7 +172,7 @@ module.exports = (function() {
         this.schema.addForeignKey(table, referenceTable);
         return this.db.adapter.generateSimpleForeignKeyQuery(table, referenceTable);
       } else {
-        throw new Error(`${this.db.adapter.constructor.name} does not support foreign keys`);
+        throw new Error(log.fatal(`${this.db.adapter.constructor.name} does not support foreign keys`));
       }
 
     }
@@ -181,7 +183,7 @@ module.exports = (function() {
         this.schema.dropForeignKey(table, referenceTable);
         return this.db.adapter.generateDropSimpleForeignKeyQuery(table, referenceTable);
       } else {
-        throw new Error(`${this.db.adapter.constructor.name} does not support foreign keys`);
+        throw new Error(log.fatal(`${this.db.adapter.constructor.name} does not support foreign keys`));
       }
     }
 

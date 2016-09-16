@@ -7,15 +7,15 @@ module.exports = (() => {
   /**
    * Configuring log4js for system
    */
-  const log4js = require('log4js');  
+  const log4js = require('log4js');
   log4js.configure({
       appenders: [
         {
-            type: "console",            
-            category: [ 'Install','Controller', 'Model', 'Db' ],            
+            type: "console",
+            category: [ 'Install','Controller', 'Model', 'DataBase', 'Help', 'Migration' ],
         }
     ],
-    replaceConsole: true
+    replaceConsole: false
   });
 
   CLI.load(__dirname, './commands');
