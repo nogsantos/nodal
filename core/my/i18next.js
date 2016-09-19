@@ -3,8 +3,9 @@ module.exports = (() => {
 
 	const i18next = require('i18next');
 	const Backend = require('i18next-node-fs-backend');
-	const sprintf = require('i18next-sprintf-postprocessor');
-	i18next.use(Backend).use(sprintf).init({
+	// const sprintf = require('i18next-sprintf-postprocessor');
+	// i18next.use(Backend).use(sprintf).init({
+	i18next.use(Backend).init({
 		backend: {
 			loadPath: process.cwd() + '/locales/{{lng}}/{{ns}}.json',
 		},
