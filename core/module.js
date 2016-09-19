@@ -5,17 +5,6 @@ module.exports = (function() {
   // This will load dotenv / etc.
   const fxn  = require('fxn');
 
-  const backendOption = {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
-      addPath: '/locales/{{lng}}/{{ns}}.missing.json',
-      jsonIndent: 2
-  }
-  const i18next = require('i18next');
-  const Backend = require('i18next-node-fs-backend');
-  i18next.use(Backend).init({
-      backend: backendOption
-  });
-
   let types = require('pg').types;
   types.setTypeParser(20, function(val) {
     return val === null ? null : parseInt(val);
@@ -65,7 +54,8 @@ module.exports = (function() {
       mime: require('mime-types'),
       inflect: require('i')()
     },
-    env: require('./env.js')()
+    env: require('./env.js')(),
+    i18next: require('./my/i18next.js')()
   };
 
   Object.defineProperties(LazyNodal, {
