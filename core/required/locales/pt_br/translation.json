@@ -1,0 +1,35 @@
+{
+    "model": {
+        "error": {
+            "find_id": "Não foi possível localizar {{name}} com o id \"{{id}}\".",
+            "find_field": "Não foi possível localizar {{name}} com o campo {{field}} \"{{value}}\".",
+            "set_schema": {
+                "for_name": "Não foi possível definir esquema para {{name}}.",
+                "message": "Por favor, certifique-se de executar as migrações pendentes."
+            },
+            "relationship": {
+                "no_valid": "Não há relações válidas (Erro no primeiro parâmetro)",
+                "joins": "Não existe relacionamento \"{{joinnames}}\" para o modelo \"{{modelname}}\".",
+                "fetch_parent": "Não foi possível obter o relacionamento"
+            },
+            "database": {
+                "provide": "É preciso definir um banco de dados para salvar",
+                "not_save": "O modelo não pode ser salvo"
+            },
+            "array": {
+                "empty_array": "Não foi possível criar um resultado para o array vazio.",
+                "not_in_storage": "Nem todos os modelos estão em armazenamento"
+            }
+        }
+    },
+    "controller": {
+        "error": {
+            "bad_request": "Pedido ruim",
+            "unauthorized": "Não autorizado",
+            "not_foud": "Não localizado",
+            "not_implemented": "Não implementado",
+            "many_requests": "Muitas requisições",
+            "server_error": "Erro do Servidor Interno"
+        }
+    }
+}
