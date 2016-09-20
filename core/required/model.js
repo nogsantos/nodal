@@ -103,21 +103,10 @@ module.exports = (function() {
     * @param {string} if has a relationship, join param can be used to set the relationship.
     * @param {function({Error} err, {Nodal.Model} model)} callback The callback to execute upon completion
     */
-    static findByWithJoin(objToSearch, joinField, callback) {
-		let query = {};
-		let k = "";
-		let v = [];
-		let count = 0;
-		let objLenght = Object.keys(objToSearch).length;
-		for (let key in objToSearch) {
-			let end = (++count !== objLenght) ? ',' : '';
-			k += `${key}${end}`;
-			v.push(objToSearch[key])
-		}
-		query[k] = v;
+    static findByWithJoin(query, joinField, callback) {
 		return new Composer(this)
 			.join(joinField)
-			.where(query)
+			.where(objToSearch)
 			.end((err, models) => {
 				if (!err && !models.length) {
 					let err = new Error(translate.t(`core.model.error.find_field, {name: ${this.name}, field: ${field}, value: ${value}}`));
