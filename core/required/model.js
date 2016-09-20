@@ -16,7 +16,7 @@ module.exports = (function() {
   const RelationshipGraph = require('./relationship_graph.js');
   const Relationships = new RelationshipGraph();
 
-  const translate = require('./i18next.js')();
+  const translate = require('../my/i18next.js')();
 
   /**
   * Basic Model implementation. Optionally interfaces with database.
@@ -58,7 +58,7 @@ module.exports = (function() {
         .end((err, models) => {
 
           if (!err && !models.length) {
-            let err = new Error(translate.t(`model.error.find_id, {name: ${this.name}, id: ${id}}`));            
+            let err = new Error(translate.t(`core.model.error.find_id, {name: ${this.name}, id: ${id}}`));
             err.notFound = true;
             return callback(err);
           }
@@ -86,7 +86,7 @@ module.exports = (function() {
         .end((err, models) => {
 
           if (!err && !models.length) {
-            let err = new Error(translate.t(`model.error.find_field, {name: ${this.name}, field: ${field}, value: ${value}}`));            
+            let err = new Error(translate.t(`core.model.error.find_field, {name: ${this.name}, field: ${field}, value: ${value}}`));
             err.notFound = true;
             return callback(err);
           }
@@ -120,7 +120,7 @@ module.exports = (function() {
 			.where(query)
 			.end((err, models) => {
 				if (!err && !models.length) {
-					let err = new Error(translate.t(`model.error.find_field, {name: ${this.name}, field: ${field}, value: ${value}}`));					
+					let err = new Error(translate.t(`core.model.error.find_field, {name: ${this.name}, field: ${field}, value: ${value}}`));
 					err.notFound = true;
 					return callback(err);
 				}
@@ -351,8 +351,8 @@ module.exports = (function() {
 
       if (!schema) {
         throw new Error([
-            translate.t(`model.error.set_schema.for_name, {name: ${this.name}}`),
-            translate.t(`model.error.set_schema.message`)          
+            translate.t(`core.model.error.set_schema.for_name, {name: ${this.name}}`),
+            translate.t(`core.model.error.set_schema.message`)
         ].join('\n'));
       }
 
@@ -895,13 +895,13 @@ module.exports = (function() {
       joinNames = joinNames.slice(1);
 
       if (!joinNames.length) {
-        throw new Error(translate.t(`model.error.relationship.no_valid`));
+        throw new Error(translate.t(`core.model.error.relationship.no_valid`));
       }
 
       let invalidJoinNames = joinNames.filter(r => !this.relationship(r));
 
       if (invalidJoinNames.length) {
-        throw new Error(translate.t(`model.error.relationship.joins, {joinnames: ${invalidJoinNames.join('", "')}, modelname: ${this.constructor.name} }`));
+        throw new Error(translate.t(`core.model.error.relationship.joins, {joinnames: ${invalidJoinNames.join('", "')}, modelname: ${this.constructor.name} }`));
       }
 
       let query = this.constructor.query().where({id: this.get('id')});
@@ -915,7 +915,7 @@ module.exports = (function() {
         }
 
         if (!models || !models.length) {
-          return callback(new Error(translate.t('model.error.relationship.fetch_parent')));
+          return callback(new Error(translate.t('core.model.error.relationship.fetch_parent')));
         }
 
         let model = models[0];
@@ -1291,7 +1291,7 @@ module.exports = (function() {
       let model = this;
 
       if (!(db instanceof Database)) {
-        throw new Error(translate.t(`model.error.database.provide`));
+        throw new Error(translate.t(`core.model.error.database.provide`));
       }
 
       if (typeof callback !== 'function') {
@@ -1300,7 +1300,7 @@ module.exports = (function() {
 
       if (!model.inStorage()) {
 
-        setTimeout(callback.bind(model, {'_query': translate.t(`model.error.database.not_save`)}, model), 1);
+        setTimeout(callback.bind(model, {'_query': translate.t(`core.model.error.database.not_save`)}, model), 1);
         return;
 
       }

@@ -4,7 +4,7 @@ module.exports = (() => {
 
   const fxn = require('fxn');
   const API = require('./api.js');
-  const translate = require('./i18next.js')();
+  const translate = require('../my/i18next.js')();
 
   class Controller extends fxn.Controller {
 
@@ -16,7 +16,7 @@ module.exports = (() => {
     */
     badRequest(msg, details) {
       this.status(400);
-      this.render(API.error(msg || translate.t(`controller.error.bad_request`), details));
+      this.render(API.error(msg || translate.t(`core.controller.error.bad_request`), details));
       return true;
     }
 
@@ -28,7 +28,7 @@ module.exports = (() => {
     */
     unauthorized(msg, details) {
       this.status(401);
-      this.render(API.error(msg || translate.t(`controller.error.unauthorized`), details));
+      this.render(API.error(msg || translate.t(`core.controller.error.unauthorized`), details));
       return true;
     }
 
@@ -40,7 +40,7 @@ module.exports = (() => {
     */
     notFound(msg, details) {
       this.status(404);
-      this.render(API.error(msg || translate.t(`controller.error.not_foud`), details));
+      this.render(API.error(msg || translate.t(`core.controller.error.not_foud`), details));
       return true;
     }
 
@@ -52,7 +52,7 @@ module.exports = (() => {
     */
     notImplemented(msg, details) {
       this.status(501);
-      this.render(API.error(msg  || translate.t(`controller.error.not_implemented`), details));
+      this.render(API.error(msg  || translate.t(`core.controller.error.not_implemented`), details));
       return true;
     }
 
@@ -64,7 +64,7 @@ module.exports = (() => {
     */
     tooManyRequests(msg, details) {
       this.status(429);
-      this.render(API.error(msg || translate.t(`controller.error.many_requests`), details));
+      this.render(API.error(msg || translate.t(`core.controller.error.many_requests`), details));
       return true;
     }
 
@@ -76,7 +76,7 @@ module.exports = (() => {
     */
     error(msg, details) {
       this.status(500);
-      this.render(API.error(msg || translate.t(`controller.error.server_error`), details));
+      this.render(API.error(msg || translate.t(`core.controller.error.server_error`), details));
       return true;
     }
 

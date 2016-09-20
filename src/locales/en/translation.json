@@ -1,0 +1,40 @@
+{
+  "core": {
+    "model": {
+      "error": {
+        "find_id": "Could not find {{name}} with id \"{{id}}\".",
+        "find_field": "Could not find {{name}} with {{field}} \"{{value}}\".",
+        "set_schema": {
+          "for_name": "Could not set Schema for {{name}}.",
+          "message": "Please make sure to run any outstanding migrations."
+        },
+        "relationship": {
+          "no_valid": "No valid relationships (1st parameter is error)",
+          "joins": "Joins \"{{joinnames}}\" for model \"{{modelname}}\" do not exist.",
+          "fetch_parent": "Could not fetch parent"
+        },
+        "database": {
+          "provide": "Must provide a valid Database to save to",
+          "not_save": "Model has not been saved"
+        },
+        "array": {
+          "empty_array": "Cannot create ModelArray from empty Aray",
+          "not_in_storage": "Not all models are in storage"
+        }
+      }
+    },
+    "controller": {
+      "error": {
+        "bad_request": "Bad Request",
+        "unauthorized": "Unauthorized",
+        "not_foud": "Not Found",
+        "not_implemented": "Not Implemented",
+        "many_requests": "Too Many Requests",
+        "server_error": "Internal Server Error"
+      }
+    }
+  },
+  "app": {
+    "": ""
+  }
+}
