@@ -5,7 +5,7 @@ module.exports = (() => {
   const Backend = require('i18next-node-fs-backend');
   // const sprintf = require('i18next-sprintf-postprocessor');
   // i18next.use(Backend).use(sprintf).init({
-  i18next.use(Backend).init({
+  return i18next.use(Backend).init({
     backend: {
       loadPath: `${process.cwd()}/locales/{{lng}}/{{ns}}.json`,
     },
@@ -14,6 +14,4 @@ module.exports = (() => {
     fallbackLng: 'en',
     debug: false
   });
-
-  return i18next;
 })
