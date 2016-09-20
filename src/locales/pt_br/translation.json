@@ -30,7 +30,11 @@
         "not_foud": "Não localizado",
         "not_implemented": "Não implementado",
         "many_requests": "Muitas requisições",
-        "server_error": "Erro do Servidor Interno"
+        "server_error": "Erro do Servidor Interno",
+        "integrity_constrant_violation": "Violação de integridade dos dados.",
+        "not_null_violation": "campos obrigatórios não foram informados.",
+        "foreing_key_violation": "O item possui relacionamento no banco de dados. Para excluí-los, esses relacionamentos precisam ser desfeitos.",
+        "unique_violation": "A unicidade de chave foi violada."
       }
     }
   },

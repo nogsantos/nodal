@@ -93,8 +93,27 @@ module.exports = (() => {
         if (data.notFound) {
           return this.notFound(data.message, data.details);
         }
+        
+		var message = "";
+		switch(data.code){
+			case "23000": //INTEGRITY CONSTRAINT VIOLATION
+				message = translate.t(`core.controller.error.integrity_constrant_violation`);
+			break
+			case "23502": //NOT NULL VIOLATION
+				message = translate.t(`core.controller.error.not_null_violation`);
+			break
+			case "23503": //FOREIGN KEY VIOLATION
+				message = translate.t(`core.controller.error.foreing_key_violation`);
+			break
+			case "23505": //UNIQUE VIOLATION
+				message = translate.t(`core.controller.error.unique_violation`);
+			break			
+			default:
+				message = data.message;
+			break
+		}		
 
-        return this.badRequest(data.message, data.details);
+        return this.badRequest(message, data.details);
 
       }
 

@@ -30,7 +30,11 @@
         "not_foud": "Not Found",
         "not_implemented": "Not Implemented",
         "many_requests": "Too Many Requests",
-        "server_error": "Internal Server Error"
+        "server_error": "Internal Server Error",
+        "integrity_constrant_violation": "Integrity constrant violation.",
+        "not_null_violation": "Required fields were not informed.",
+        "foreing_key_violation": "The item has relationships in the database. To delete them, these relationships need to be broken.",
+        "unique_violation": "The uniqueness key was violated."
       }
     }
   },
