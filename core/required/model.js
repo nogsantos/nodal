@@ -106,7 +106,7 @@ module.exports = (function() {
     static findByWithJoin(query, joinField, callback) {
 		return new Composer(this)
 			.join(joinField)
-			.where(objToSearch)
+			.where(query)
 			.end((err, models) => {
 				if (!err && !models.length) {
 					let err = new Error(translate.t(`core.model.error.find_field, {name: ${this.name}, field: ${field}, value: ${value}}`));
