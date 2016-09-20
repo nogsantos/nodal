@@ -55,7 +55,7 @@ module.exports = (function() {
       inflect: require('i')()
     },
     env: require('./env.js')(),
-    i18next: require('./my/i18next.js')()
+    i18next: require('./required/i18next.js')()
   };
 
   Object.defineProperties(LazyNodal, {

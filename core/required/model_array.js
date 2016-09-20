@@ -6,7 +6,7 @@ module.exports = (function() {
 
   const ItemArray = require('./item_array.js');
 
-  const translate = require('../my/i18next.js')();
+  const translate = require('./i18next.js')();
 
   /**
   * Array of Models, for easy conversion to Objects

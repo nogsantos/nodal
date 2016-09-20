@@ -4,7 +4,7 @@ module.exports = (() => {
 
   const fxn = require('fxn');
   const API = require('./api.js');
-  const translate = require('../my/i18next.js')();
+  const translate = require('./i18next.js')();
 
   class Controller extends fxn.Controller {
 

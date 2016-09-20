@@ -16,7 +16,7 @@ module.exports = (function() {
   const RelationshipGraph = require('./relationship_graph.js');
   const Relationships = new RelationshipGraph();
 
-  const translate = require('../my/i18next.js')();
+  const translate = require('./i18next.js')();
 
   /**
   * Basic Model implementation. Optionally interfaces with database.
