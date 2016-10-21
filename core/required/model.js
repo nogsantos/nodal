@@ -118,6 +118,29 @@ module.exports = (function() {
     }
 
     /**
+     *  TOFIX - Quantidade de itens no array provisório!
+     * 
+     * Finds a model with a provided object and a relationship. Returns the first found.
+     * @param {Object} object to query Ex.: {id: 1, user_id: 1 ...}
+     * @param {Array} if has a relationship, join param can be used to set the relationship.
+     * @param {function({Error} err, {Nodal.Model} model)} callback The callback to execute upon completion
+     */
+    static findByMultipleJoin(query, joinFieldArray, callback) {
+		return new Composer(this)
+			.join(joinFieldArray[0])
+			.join(joinFieldArray[1])
+			.where(query)
+			.end((err, models) => {
+				if (!err && !models.length) {
+					let err = new Error(`Erro no relacionamento nome: ${this.name}, campo: ${field}, valor: ${value}`);
+					err.notFound = true;
+					return callback(err);
+				}
+				callback(err, models[0]);
+			});
+    }
+
+    /**
     * Creates a new model instance using the provided data.
     * @param {object} data The data to load into the object.
     * @param {function({Error} err, {Nodal.Model} model)} callback The callback to execute upon completion
