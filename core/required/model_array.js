@@ -6,8 +6,6 @@ module.exports = (function() {
 
   const ItemArray = require('./item_array.js');
 
-  const translate = require('./i18next.js')();
-
   /**
   * Array of Models, for easy conversion to Objects
   * @class
@@ -32,7 +30,7 @@ module.exports = (function() {
     static from(arr) {
 
       if (!arr.length) {
-        throw new Error(translate.t(`core.model.array.empty_array`));
+        throw new Error(`error_empty_array`);
       }
 
       let modelArray = new this(arr[0].constructor);
@@ -85,7 +83,7 @@ module.exports = (function() {
     destroyAll(callback) {
 
       if (this.filter(m => !m.inStorage()).length) {
-        return callback(new Error(translate.t(`core.model.array.not_in_storage`)));
+        return callback(new Error(`error_array_not_in_storage`));
       }
 
       let db = this.Model.prototype.db;
@@ -120,7 +118,7 @@ module.exports = (function() {
       let db = this.Model.prototype.db;
 
       if (this.filter(m => !m.inStorage()).length) {
-        return callback(new Error(translate.t(`core.model.array.not_in_storage`)));
+        return callback(new Error(`error_array_not_in_storage`));
       }
 
       let params = this.map(m => m.get('id'));

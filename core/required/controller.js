@@ -4,7 +4,6 @@ module.exports = (() => {
 
   const fxn = require('fxn');
   const API = require('./api.js');
-  const translate = require('./i18next.js')();
 
   class Controller extends fxn.Controller {
 
@@ -16,7 +15,7 @@ module.exports = (() => {
     */
     badRequest(msg, details) {
       this.status(400);
-      this.render(API.error(msg || translate.t(`core.controller.error.bad_request`), details));
+      this.render(API.error(msg || `error_bad_request`, details));
       return true;
     }
 
@@ -28,7 +27,7 @@ module.exports = (() => {
     */
     unauthorized(msg, details) {
       this.status(401);
-      this.render(API.error(msg || translate.t(`core.controller.error.unauthorized`), details));
+      this.render(API.error(msg || `error_unauthorized`, details));
       return true;
     }
 
@@ -40,7 +39,7 @@ module.exports = (() => {
     */
     notFound(msg, details) {
       this.status(404);
-      this.render(API.error(msg || translate.t(`core.controller.error.not_foud`), details));
+      this.render(API.error(msg || `error_not_foud`, details));
       return true;
     }
 
@@ -52,7 +51,7 @@ module.exports = (() => {
     */
     notImplemented(msg, details) {
       this.status(501);
-      this.render(API.error(msg  || translate.t(`core.controller.error.not_implemented`), details));
+      this.render(API.error(msg  || `error_not_implemented`, details));
       return true;
     }
 
@@ -64,7 +63,7 @@ module.exports = (() => {
     */
     tooManyRequests(msg, details) {
       this.status(429);
-      this.render(API.error(msg || translate.t(`core.controller.error.many_requests`), details));
+      this.render(API.error(msg || `error_many_requests`, details));
       return true;
     }
 
@@ -76,7 +75,7 @@ module.exports = (() => {
     */
     error(msg, details) {
       this.status(500);
-      this.render(API.error(msg || translate.t(`core.controller.error.server_error`), details));
+      this.render(API.error(msg || `error_server_error`, details));
       return true;
     }
 
@@ -93,25 +92,25 @@ module.exports = (() => {
         if (data.notFound) {
           return this.notFound(data.message, data.details);
         }
-        
+
 		var message = "";
 		switch(data.code){
 			case "23000": //INTEGRITY CONSTRAINT VIOLATION
-				message = translate.t(`core.controller.error.integrity_constrant_violation`);
+				message = `error_integrity_constrant_violation`;
 			break
 			case "23502": //NOT NULL VIOLATION
-				message = translate.t(`core.controller.error.not_null_violation`);
+				message = `error_not_null_violation`;
 			break
 			case "23503": //FOREIGN KEY VIOLATION
-				message = translate.t(`core.controller.error.foreing_key_violation`);
+				message = `error_foreing_key_violation`;
 			break
 			case "23505": //UNIQUE VIOLATION
-				message = translate.t(`core.controller.error.unique_violation`);
-			break			
+				message = `error_unique_violation`;
+			break
 			default:
 				message = data.message;
 			break
-		}		
+		}
 
         return this.badRequest(message, data.details);
 

@@ -54,8 +54,7 @@ module.exports = (function() {
       mime: require('mime-types'),
       inflect: require('i')()
     },
-    env: require('./env.js')(),
-    translate: require('./required/i18next.js')()
+    env: require('./env.js')()
   };
 
   Object.defineProperties(LazyNodal, {
