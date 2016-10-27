@@ -36,7 +36,7 @@ module.exports = (function() {
     }
 
     /**
-    * Finds a model with a provided id, otherwise returns a notFound error_
+    * Finds a model with a provided id, otherwise returns a notFound service.error.
     * @param {number} id The id of the model you're looking for
     * @param {function({Error} err, {Nodal.Model} model)} callback The callback to execute upon completion
     */
@@ -56,7 +56,7 @@ module.exports = (function() {
         .end((err, models) => {
 
           if (!err && !models.length) {
-            let err = new Error(`error_find_id__{name:${this.name},id:${id}}`);
+            let err = new Error(`service.error.find_id__{name:${this.name},id:${id}}`);
             err.notFound = true;
             return callback(err);
           }
@@ -84,7 +84,7 @@ module.exports = (function() {
         .end((err, models) => {
 
           if (!err && !models.length) {
-            let err = new Error(`error_find_field__{name:${this.name}, field: ${field}, value: ${value}}`);
+            let err = new Error(`service.error.find_field__{name:${this.name}, field: ${field}, value: ${value}}`);
             err.notFound = true;
             return callback(err);
           }
@@ -107,7 +107,7 @@ module.exports = (function() {
 			.where(query)
 			.end((err, models) => {
 				if (!err && !models.length) {
-					let err = new Error(`error_find_field__{name: ${this.name}, field: ${field}, value: ${value}}`);
+					let err = new Error(`service.error.find_field__{name: ${this.name}, field: ${field}, value: ${value}}`);
 					err.notFound = true;
 					return callback(err);
 				}
@@ -130,7 +130,7 @@ module.exports = (function() {
 			.where(query)
 			.end((err, models) => {
 				if (!err && !models.length) {
-					let err = new Error(`error_relationship__{name: ${this.name}, field: ${field}, value: ${value}}`);
+					let err = new Error(`service.error.relationship__{name: ${this.name}, field: ${field}, value: ${value}}`);
 					err.notFound = true;
 					return callback(err);
 				}
@@ -361,8 +361,8 @@ module.exports = (function() {
 
       if (!schema) {
         throw new Error([
-            `error_set_schema_for_name__{name: ${this.name}}`,
-            `error_set_schema.message`
+            `service.error.set_schema_for_name__{name: ${this.name}}`,
+            `service.error.set_schema.message`
         ].join('\n'));
       }
 
@@ -484,20 +484,20 @@ module.exports = (function() {
       }
 
       if (this.prototype._calculations[calcField]) {
-        throw new Error(`error_calculated_already_exists__{field:"${calcField}", name: "${this.name}"}`);
+        throw new Error(`service.error.calculated_already_exists__{field:"${calcField}", name: "${this.name}"}`);
       }
 
       let columnLookup = this.columnLookup();
 
       if (columnLookup[calcField]) {
-        throw new Error(`error_cannot_create_calculated__{field:"${calcField}", name:"${this.name}"}`);
+        throw new Error(`service.error.cannot_create_calculated__{field:"${calcField}", name:"${this.name}"}`);
       }
 
       let fields = utilities.getFunctionParameters(fnCompute);
 
       fields.forEach(f => {
         if (!columnLookup[f]) {
-          throw new Error(`error_calculation_function__{field:"${calcField},name: "${this.name}", using: "${f}"}`)
+          throw new Error(`service.error.calculation_function__{field:"${calcField},name: "${this.name}", using: "${f}"}`)
         }
       });
 
@@ -676,7 +676,7 @@ module.exports = (function() {
       if (this.hasErrors()) {
 
         let errorObject = this.getErrors();
-        let message = errorObject._query || 'error_validation';
+        let message = errorObject._query || 'service.error.validation';
 
         error = new Error(message);
         error.details = errorObject;
@@ -765,7 +765,7 @@ module.exports = (function() {
 
       if (!this.hasField(field)) {
 
-        throw new Error(`error_field_does_not_belong__{field:${field}, model:${this.constructor.name}`);
+        throw new Error(`service.error.field_does_not_belong__{field:${field}, model:${this.constructor.name}`);
 
       }
 
@@ -824,7 +824,7 @@ module.exports = (function() {
 
         if (!(value instanceof relationship.getModel())) {
 
-          throw new Error(`error_not_an_instance_of__{value:${value}, relationship: ${relationship.getModel().name}}`);
+          throw new Error(`service.error.not_an_instance_of__{value:${value}, relationship: ${relationship.getModel().name}}`);
 
         }
 
@@ -832,7 +832,7 @@ module.exports = (function() {
 
         if (!(value instanceof ModelArray) && ModelArray.Model !== relationship.getModel()) {
 
-          throw new Error(`error_not_an_instance_of__{value:${value}, relationship: ${relationship.getModel().name}}`);
+          throw new Error(`service.error.not_an_instance_of__{value:${value}, relationship: ${relationship.getModel().name}}`);
 
         }
 
@@ -905,13 +905,13 @@ module.exports = (function() {
       joinNames = joinNames.slice(1);
 
       if (!joinNames.length) {
-        throw new Error(`error_relationship_no_valid`);
+        throw new Error(`service.error.relationship_no_valid`);
       }
 
       let invalidJoinNames = joinNames.filter(r => !this.relationship(r));
 
       if (invalidJoinNames.length) {
-        throw new Error(`error_relationship_joins__{joinnames: ${invalidJoinNames.join('", "')}, modelname: ${this.constructor.name} }`);
+        throw new Error(`service.error.relationship_joins__{joinnames: ${invalidJoinNames.join('", "')}, modelname: ${this.constructor.name} }`);
       }
 
       let query = this.constructor.query().where({id: this.get('id')});
@@ -925,7 +925,7 @@ module.exports = (function() {
         }
 
         if (!models || !models.length) {
-          return callback(new Error(`error_relationship_fetch_parent`));
+          return callback(new Error(`service.error.relationship_fetch_parent`));
         }
 
         let model = models[0];
@@ -1301,7 +1301,7 @@ module.exports = (function() {
       let model = this;
 
       if (!(db instanceof Database)) {
-        throw new Error(`error_database_provide`);
+        throw new Error(`service.error.database_provide`);
       }
 
       if (typeof callback !== 'function') {
@@ -1310,7 +1310,7 @@ module.exports = (function() {
 
       if (!model.inStorage()) {
 
-        setTimeout(callback.bind(model, {'_query': `error_database_not_save`}, model), 1);
+        setTimeout(callback.bind(model, {'_query': `service.error.database_not_save`}, model), 1);
         return;
 
       }

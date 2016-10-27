@@ -20,7 +20,7 @@ module.exports = (() => {
     error(req, res, start, status, message, err) {
 
       status = status || 500;
-      message = message || 'Internal Server Error';
+      message = message || 'service.error.internal_server_error';
 
       let headers = {'Content-Type': 'application/json'};
 
