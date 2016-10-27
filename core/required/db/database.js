@@ -3,7 +3,7 @@ module.exports = (() => {
   'use strict';
 
   const colors = require('colors/safe');
-  
+
   const log = require('log4js').getLogger('DataBase');
 
   const DEFAULT_ADAPTER = 'postgres';
@@ -36,7 +36,7 @@ module.exports = (() => {
     close(callback) {
 
       this.adapter.close.apply(this, arguments);
-      callback.call(this);
+      callback && callback.call(this);
       return true;
 
     }
