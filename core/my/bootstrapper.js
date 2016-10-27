@@ -172,14 +172,13 @@ module.exports = (() => {
             let schema_ids = result.rows.map((v) => { return v.id; });
 
             let migrations = fs.readdirSync(MIGRATION_PATH).map((v) => {
+            if(v.indexOf('.') === 0) return {};
               return {
                 id: parseInt(v.substr(0, v.indexOf('__'))),
                 migration: new (require(process.cwd() + '/' + MIGRATION_PATH + '/' + v))(db)
               };
-            });
-
-            migrations = migrations.filter((v) => {
-              return schema_ids.indexOf(v.id) === -1;
+            }).filter((v) => {
+              return v.id && schema_ids.indexOf(v.id) === -1;
             });
 
             if (migrations.length === 0) {
@@ -244,12 +243,13 @@ module.exports = (() => {
           let schema_ids = result.rows.map((v) => { return v.id; });
 
           let migrations = fs.readdirSync(MIGRATION_PATH).map((v) => {
+            if(v.indexOf('.') === 0) return {};
             return {
               id: parseInt(v.substr(0, v.indexOf('__'))),
               migration: new (require(process.cwd() + '/' + MIGRATION_PATH + '/' + v))(db)
             };
           }).filter((v) => {
-            return schema_ids.indexOf(v.id) !== -1;
+            return v.id && schema_ids.indexOf(v.id) !== -1;
           }).reverse();
 
           if (migrations.length === 0) {
@@ -285,7 +285,7 @@ module.exports = (() => {
 
     }
 
-    seed(callback) {
+    seed(modelList, callback) {
 
       this.connect((err, db) => {
 
@@ -295,11 +295,22 @@ module.exports = (() => {
 
         callback = this.wrapCallback(db, callback);
 
-        let seed = Config.seed;
-
-        if (!seed) {
+        if (!Config.seed) {
           return callback(new Error('Could not seed, no seed found in "./config/seed.json". Please make sure JSON is correct.'));
         }
+
+        let seed = {};
+
+       // determine seed from matching values in modelList and Config.seed
+       if (modelList && modelList.length) modelList.forEach((model) => {
+         if(Config.seed[model]) seed[model] = Config.seed[model];
+       });
+       else seed = Config.seed;
+
+       if (!Object.keys(seed).length) {
+         return callback(new Error('No seed data available'));
+       }
+
         return ModelFactory.populate(seed, callback);
 
       });
