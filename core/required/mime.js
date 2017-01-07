@@ -1,5 +1,4 @@
 module.exports = (() => {
-
-  return require('mime-types');
-
+    'use strict';
+    return require('mime-types');
 })();

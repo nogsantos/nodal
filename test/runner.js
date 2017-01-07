@@ -1,5 +1,6 @@
 'use strict';
 
+process.env.NODAL_ENV = 'test';    
 let child_process = require('child_process');
 let os = require('os');
 
