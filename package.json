@@ -36,6 +36,8 @@
     },
     "scripts": {
         "test": "mocha ./test/runner.js",
+        "tdd": "mocha ./test/runner.js --reporter min --watch",
+        "test_trace": "mocha ./test/runner.js --full-trace",
         "docs": "documentation build core/module.js -o docs -f html"
     },
     "repository": {

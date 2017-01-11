@@ -1,4 +1,1 @@
-module.exports = (() => {
-  'use strict';
-  return require('fxn').utilities;
-})();
+module.exports = require('fxn').utilities;

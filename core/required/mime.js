@@ -1,4 +1,1 @@
-module.exports = (() => {
-    'use strict';
-    return require('mime-types');
-})();
+module.exports =  require('mime-types');
