@@ -1,15 +1,23 @@
 'use strict';
 const qs = require('querystring');
 /**
- * 
+ * To execute HTTP tests
  */
 class EndpointRequest {
     /**
      * 
      */
-    constructor(router, path, params) {
+    constructor(router, path, params, method) {
+        this.header = [];
+        this.method = (method || "GET").toUpperCase();
         this.router = router;
-        this.url = path + (params ? `?${qs.stringify(params)}` : '');
+        if (this.method !== "GET") {
+            this.header['content-type'] = 'application/x-www-form-urlencoded';
+            this.body = qs.stringify(params);
+            this.url = path;
+        } else {
+            this.url = path + (params ? `?${qs.stringify(params)}` : '');
+        }
         this.route = this.router.find(this.url);
         if (!this.route) {
             throw new Error(`Route for ${this._path} does not exist`);
@@ -20,12 +28,7 @@ class EndpointRequest {
      */
     mock(method, body, callback) {
         return this.router.dispatch(
-            this.router.prepare(
-                '::1',
-                this.url,
-                method, {},
-                body
-            ),
+            this.router.prepare('::1', this.url, this.method, this.header, this.body),
             (err, status, headers, body) => {
                 let json = null;
                 if (err) {
@@ -39,8 +42,7 @@ class EndpointRequest {
                     }
                 }
                 callback(status, headers, body, json);
-            }
-        );
+            });
     }
     /**
      * 
@@ -67,5 +69,4 @@ class EndpointRequest {
         this.mock('PUT', body, callback);
     }
 }
-
 module.exports = EndpointRequest;
