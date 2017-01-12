@@ -27,6 +27,7 @@ let Nodal = {
     Router: null,
     Scheduler: null,
     SchemaGenerator: null,
+    Log: null,
     my: {
         Config: null,
         Schema: null,
@@ -151,6 +152,12 @@ Object.defineProperties(LazyNodal, {
     SchemaGenerator: {
         get: function () {
             return Nodal.SchemaGenerator || (Nodal.SchemaGenerator = require('./required/db/schema_generator.js'));
+        },
+        enumerable: true
+    },
+    Log: {
+        get: function () {
+            return Nodal.Log || (Nodal.Log = require('log4js'));
         },
         enumerable: true
     }

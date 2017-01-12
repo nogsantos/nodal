@@ -8,7 +8,9 @@
 
 ## 0.12
 
-* :x: MySQL Support
+* :x: ~~MySQL Support~~
+* :x: NoSql Support
+* :x: Redis Support
 * :x: Transaction support for database queries
 * :x: Way to work with Geometric data points
 * :x: Scheduler / worker full implementation

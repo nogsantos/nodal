@@ -1,46 +1,41 @@
-module.exports = (function() {
+'use strict';
+const Nodal = require('nodal');
+const router = new Nodal.Router();
 
-  'use strict';
+/* Middleware */
+/* executed *before* Controller-specific middleware */
 
-  const Nodal = require('nodal');
-  const router = new Nodal.Router();
+const CORSMiddleware = Nodal.require('middleware/cors_middleware.js');
+// const CORSAuthorizationMiddleware = Nodal.require('middleware/cors_authorization_middleware.js');
+// const ForceWWWMiddleware = Nodal.require('middleware/force_www_middleware.js');
+// const ForceHTTPSMiddleware = Nodal.require('middleware/force_https_middleware.js');
 
-  /* Middleware */
-  /* executed *before* Controller-specific middleware */
+router.middleware.use(CORSMiddleware);
+// router.middleware.use(CORSAuthorizationMiddleware);
+// router.middleware.use(ForceWWWMiddleware);
+// router.middleware.use(ForceHTTPSMiddleware);
 
-  const CORSMiddleware = Nodal.require('middleware/cors_middleware.js');
-  // const CORSAuthorizationMiddleware = Nodal.require('middleware/cors_authorization_middleware.js');
-  // const ForceWWWMiddleware = Nodal.require('middleware/force_www_middleware.js');
-  // const ForceHTTPSMiddleware = Nodal.require('middleware/force_https_middleware.js');
+/* Renderware */
+/* executed *after* Controller-specific renderware */
 
-  router.middleware.use(CORSMiddleware);
-  // router.middleware.use(CORSAuthorizationMiddleware);
-  // router.middleware.use(ForceWWWMiddleware);
-  // router.middleware.use(ForceHTTPSMiddleware);
+const GzipRenderware = Nodal.require('renderware/gzip_renderware.js')
 
-  /* Renderware */
-  /* executed *after* Controller-specific renderware */
+router.renderware.use(GzipRenderware);
 
-  const GzipRenderware = Nodal.require('renderware/gzip_renderware.js')
+/* Routes */
 
-  router.renderware.use(GzipRenderware);
+const IndexController = Nodal.require('app/controllers/index_controller.js');
 
-  /* Routes */
-
-  const IndexController = Nodal.require('app/controllers/index_controller.js');
-
-  /* generator: begin imports */
+/* generator: begin imports */
 
 
-  /* generator: end imports */
+/* generator: end imports */
 
-  router.route('/').use(IndexController);
+router.route('/').use(IndexController);
 
-  /* generator: begin routes */
+/* generator: begin routes */
 
 
-  /* generator: end routes */
+/* generator: end routes */
 
-  return router;
-
-})();
+module.exports = router;

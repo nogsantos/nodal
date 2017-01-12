@@ -1,17 +1,13 @@
-module.exports = (() => {
+'use strict';
+process.env.NODE_ENV = 'test';
+process.env.NODAL_TRACE_QUERY = 'true';
+process.env.NODAL_TRACE_INFO = 'true';
+const Nodal = require('nodal');
+const TestRunner = Nodal.mocha.TestRunner;
+const router = Nodal.require('app/router.js');
+const tests = new TestRunner('./test/tests', router);
 
-  'use strict';
-
-  process.env.NODE_ENV = 'test';
-
-  const Nodal = require('nodal');
-  const TestRunner = Nodal.mocha.TestRunner;
-
-  const router = Nodal.require('app/router.js');
-
-  const tests = new TestRunner('./test/tests', router);
-
-  return describe('My Application', () => {
+module.exports = describe('My Application', () => {
 
     /* Uncomment for database support */
     // before((done) => {
@@ -31,6 +27,4 @@ module.exports = (() => {
 
     tests.start(require('chai').expect);
 
-  });
-
-})();
+});

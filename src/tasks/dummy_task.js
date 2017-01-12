@@ -1,20 +1,15 @@
-module.exports = (function() {
-
-  'use strict';
-
-  const Nodal = require('nodal');
-
-  class DummyTask {
-
+'use strict';
+const Nodal = require('nodal');
+/**
+ * Dummy task example
+ */
+class DummyTask {
+    /**
+     * 
+     */
     exec(args, callback) {
-
-      console.log('Dummy task executed');
-      callback();
-
+        console.log('Dummy task executed');
+        callback();
     }
-
-  }
-
-  return DummyTask;
-
-})();
+}
+module.exports = DummyTask;

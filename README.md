@@ -3,6 +3,8 @@
 
 [![Build Status](https://travis-ci.org/nogsantos/nodal.svg?branch=master)](https://travis-ci.org/nogsantos/nodal) [![Join the chat at https://gitter.im/keithwhor/nodal](https://badges.gitter.im/keithwhor/nodal.svg)](https://gitter.im/keithwhor/nodal?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+> Note: This Nodal fork has some experimental features, it's started from `0.11.2` version, that is, it is out of date compared to the original version.
+
 ![Nodal Logo](./nodal.png)
 
 View the website at [nodaljs.com](http://nodaljs.com).
