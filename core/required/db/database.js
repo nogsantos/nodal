@@ -1,7 +1,8 @@
 'use strict';
 const colors = require('colors/safe');
 const DEFAULT_ADAPTER = 'postgres';
-const log4js = require('log4js').getLogger('DB.CORE');
+const log4js = require('log4js');
+const environment = process.env.NODE_ENV;
 const ADAPTERS = {
     'postgres': './adapters/postgres.js',
 };
@@ -14,7 +15,14 @@ class Database {
      */
     constructor() {
         this.adapter = null;
-        this._useLogColor = 0;
+        if (environment !== "production") {
+            log4js.loadAppender('console');
+            log4js.addAppender(log4js.appenders.console());
+        } else {
+            log4js.loadAppender('file');
+            log4js.addAppender(log4js.appenders.file(`./logs/error-${new Date().toISOString()}.log`), '[DATABASE]' || 'SERV');
+        }
+        this.logger = log4js.getLogger('[DATABASE]');
     }
     /**
      * 
@@ -41,25 +49,28 @@ class Database {
      * 
      */
     log(sql, params, time) {
-        let colorFunc = this.__logColorFuncs[this._useLogColor];
-        if (process.env.NODE_ENV !== "production"  && process.env.NODAL_TRACE_QUERY) { // for a clean test output
-            log4js.debug(colorFunc(`\n\t${sql}`));
+        if (process.env.NODAL_TRACE_QUERY && process.env.NODAL_TRACE_QUERY === 'true') {
+            this.logger.trace(`
+                ${colors.yellow.bold(sql)}
+                ${colors.blue.bold('Param(s): '+JSON.stringify(params))}
+                ${colors.blue.bold('Time: '+time + 'ms')}
+            `);
         }
-        return true;
+        return true; // yet?
     }
     /**
      * 
      */
     info(message) {
-        if (process.env.NODE_ENV !== "production"  && process.env.NODAL_TRACE_INFO) { // for a clean test output
-            log4js.info(colors.green.bold('Database Info: ') + message);
+        if (process.env.NODAL_TRACE_INFO && process.env.NODAL_TRACE_INFO === 'true') {
+            this.logger.info(colors.green.bold('Database Info: ') + message);
         }
     }
     /**
      * 
      */
     error(message) {
-        log4js.error(colors.red.bold('Database Error: ') + message);
+        this.logger.error(colors.red.bold('Database Error: ') + message);
         return true;
     }
     /**
@@ -88,7 +99,7 @@ class Database {
     }
 }
 /**
- * 
+ * @deprecated
  */
 Database.prototype.__logColorFuncs = [
     (str) => {

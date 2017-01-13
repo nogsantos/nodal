@@ -23,7 +23,9 @@ class DBVersionCommand extends Command {
      */
     run(args, flags, vflags, callback) {
         const bootstrapper = require('../../../core/my/bootstrapper.js');
-        bootstrapper.version(callback);
+        bootstrapper.version(result => {
+            console.info(result);
+        });
     }
 }
 module.exports = DBVersionCommand;

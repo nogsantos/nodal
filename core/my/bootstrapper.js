@@ -122,7 +122,7 @@
                           return callback(new Error('Could not get schema migration version'));
                       }
                       if (result.rows && result.rows.length) {
-                          return callback(null, `Schema version: ${result.rows[0].id}`);
+                          return callback(`Schema version: ${result.rows[0].id}`);
                       } else {
                           return callback(new Error('No Migrations have been run'));
                       }

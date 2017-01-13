@@ -1,5 +1,6 @@
 'use strict';
-
+process.env.NODAL_TRACE_QUERY = 'false';
+process.env.NODAL_TRACE_INFO = 'false';
 let child_process = require('child_process');
 let os = require('os');
 
