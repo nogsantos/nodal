@@ -18,7 +18,7 @@ router.middleware.use(CORSMiddleware);
 /* Renderware */
 /* executed *after* Controller-specific renderware */
 
-const GzipRenderware = Nodal.require('renderware/gzip_renderware.js')
+const GzipRenderware = Nodal.require('renderware/gzip_renderware.js');
 
 router.renderware.use(GzipRenderware);
 

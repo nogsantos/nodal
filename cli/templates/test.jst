@@ -1,24 +1,19 @@
-module.exports = (() => {
-
-  'use strict';
-
-  const Nodal = require('nodal');
-
-  class {{= data.name }} extends Nodal.mocha.Test {
+'use strict';
+const Nodal = require('nodal');
+/**
+ * Tests for: {{= data.name }}
+ *
+ * @author {{=data.author }}
+ * @since {{=data.since }}  
+ */
+class {{= data.name }} extends Nodal.mocha.Test {
 
     test(expect) {
-
-      it('Should do something', done => {
-
-        expect(null).to.not.exist;
-        done();
-
-      });
-
+        it('Should do something', done => {
+            expect(null).to.not.exist;
+            done();
+        });
     }
 
-  }
-
-  return {{= data.name }};
-
-})();
+}
+module.exports = {{= data.name }};

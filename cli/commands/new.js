@@ -1,174 +1,168 @@
-module.exports = (() => {
-
-  'use strict';
-
-  const Command = require('cmnd').Command;
-
-  const fs = require('fs-extra');
-  const path = require('path');
-  const inquirer = require('inquirer');
-  const inflect = require('i')();
-  const colors = require('colors/safe');
-  const async = require('async');
-  const http = require('http');
-
-  const log4js = require('log4js');  
-  const logger = log4js.getLogger('Install');
-
-  class NewCommand extends Command {
-
+'use strict';
+const Command = require('cmnd').Command;
+const fs = require('fs-extra');
+const path = require('path');
+const inquirer = require('inquirer');
+const inflect = require('i')();
+const colors = require('colors/safe');
+const async = require('async');
+// const http = require('http');
+const log4js = require('log4js');
+const logger = log4js.getLogger('Install');
+/**
+ * 
+ */
+class NewCommand extends Command {
+    /**
+     * 
+     */
     constructor() {
-
-      super('new');
-
+        super('new');
     }
-
+    /**
+     * 
+     */
     help() {
-
-      return {
-        description: 'Initialize the current directory as a new Nodal project'
-      };
-
+        return {
+            description: 'Initialize the current directory as a new Nodal project'
+        };
     }
-
+    /**
+     * 
+     */
     run(args, flags, vflags, callback) {
 
-      if (fs.existsSync('./.nodal')) {
-        logger.error('Nodal project already exists in this directory');
-        return callback(null);
-      }
-
-      const rootPath = path.resolve(__dirname);
-      const version = require('../../package.json').version;
-
-      logger.info(`Welcome to ${colors.bold('Nodal! v' + version)}`);      
-
-      let data = {
-        name: args[0] ? (args[0] + '').replace(/_/g, ' ') : '',
-        author: (vflags.author || '').replace(/_/g, ' ') || '',
-        ignoreOutput: vflags.hasOwnProperty('ignore-output')
-      };
-
-      let questions = [];
-
-      !data.name && questions.push({
-        name: 'project-name',
-        type: 'input',
-        default: 'my-nodal-project',
-        message: 'Name',
-      });
-
-      !data.author && questions.push({
-        name: 'author',
-        type: 'input',
-        default: 'mysterious author',
-        message: 'Author',
-      });
-
-      // Count new nodal projects being made. :)
-      let req = http.request({host: 'api.polybit.com', port: 80, path: `/v1/nodal_initializations?version=${version}`, method: 'POST'});
-      req.on('error', (() => {}));
-      req.end();
-
-      inquirer.prompt(questions, (promptResult) => {
-
-        promptResult.name = promptResult['project-name'] || data.name;
-        promptResult.author = promptResult.author || data.author;
-
-        promptResult.simpleName = promptResult.name.replace(/\s/gi, '-');
-
-        promptResult.databaseName = inflect.underscore(promptResult.simpleName);
-
-        promptResult.version = version;
-
-        let dirname = promptResult.name.replace(/[^A-Za-z0-9-_]/gi, '-').toLowerCase();
-
-        logger.info(`Creating directory "${colors.bold(dirname)}"...`);        
-        
-        if (fs.existsSync('./' + dirname)) {
-            logger.error(`Directory "${colors.bold(dirname)}" already exists, try a different project name`);
-            callback(null);
+        if (fs.existsSync('./.nodal')) {
+            logger.error('Nodal project already exists in this directory');
+            return callback(null);
         }
 
-        fs.mkdirSync('./' + dirname);
+        const rootPath = path.resolve(__dirname);
+        const version = require('../../package.json').version;
 
-        logger.info(`Copying Nodal directory structure and files...`);
+        logger.info(`Welcome to ${colors.bold('Nodal! v' + version)}`);
 
-        fs.copy(rootPath + '/../../src', './' + dirname, function(err) {
+        let data = {
+            name: args[0] ? (args[0] + '').replace(/_/g, ' ') : '',
+            author: (vflags.author || '').replace(/_/g, ' ') || '',
+            ignoreOutput: vflags.hasOwnProperty('ignore-output')
+        };
 
-          if (err) return callback(err);
+        let questions = [];
 
-          let dot = require('dot');
-
-          dot.templateSettings.strip = false;
-          dot.templateSettings.varname = 'data';
-
-          // Write .env
-          fs.writeFileSync('./' + dirname + '/.env', 'EXAMPLE_ENV_VAR=hello');
-
-          fs.writeFileSync('./' + dirname + '/package.json', dot.template(
-            fs.readFileSync(rootPath + '/../templates/package.json.jst').toString()
-          )(promptResult));
-
-          fs.writeFileSync('./' + dirname + '/README.md', dot.template(
-            fs.readFileSync(rootPath + '/../templates/README.md.jst').toString()
-          )(promptResult));
-
-          // read in the dbjson template, replace the development database name
-          // generate new config/db.json in the generated app
-          // NOTE: The db.json is intentionally not conditionally wrapped based
-          // on DB support since if users want to enable it later, worse case it
-          // defaults to an underscored version  <appname>_development
-          let dbjson = JSON.parse(fs.readFileSync(rootPath + '/../templates/db.json'));
-          dbjson.development.main.database = promptResult.databaseName + '_development';
-          dbjson.test.main.database = promptResult.databaseName + '_test';
-          fs.writeFileSync('./' + dirname + '/config/db.json', JSON.stringify(dbjson, null, 2));
-
-          let copyNodeModules = [
-            'cli', 'core', 'test', 'node_modules',
-            'package.json'
-          ];
-
-          async.series(
-            copyNodeModules.map(m => {
-              return (callback) => {
-
-                logger.info(`Copying ${m}...`);
-                fs.copy(
-                  path.join(rootPath, '..', '..', m),
-                  path.join(process.cwd(), dirname, 'node_modules', 'nodal', m),
-                  callback
-                );
-
-              };
-            }),
-            (err) => {
-
-              if (err) {
-                callback(err);
-              }
-
-              if (!data.ignoreOutput) {
-                logger.info(colors.bold.green('All done!'));
-                logger.info(`Your new Nodal project, ${colors.bold(promptResult.name)}, is ready to go! :)`);
-                logger.info(`Have fun ${promptResult.author}, and check out https://github.com/keithwhor/nodal for the most up-to-date Nodal information`)
-                logger.info(`${colors.bold('Pro tip: ')} You can try running your server right away with:`);
-                logger.info(`$ cd ${dirname} && nodal s`);
-              }
-
-              callback(null);
-
-            }
-          );
-
+        !data.name && questions.push({
+            name: 'project-name',
+            type: 'input',
+            default: 'my-nodal-project',
+            message: 'Name',
         });
 
-      });
+        !data.author && questions.push({
+            name: 'author',
+            type: 'input',
+            default: 'mysterious author',
+            message: 'Author',
+        });
 
+        // Count new nodal projects being made. :)
+        // let req = http.request({
+        //     host: 'api.polybit.com',
+        //     port: 80,
+        //     path: `/v1/nodal_initializations?version=${version}`,
+        //     method: 'POST'
+        // });
+        // req.on('error', (() => {}));
+        // req.end();
+
+        inquirer.prompt(questions, (promptResult) => {
+
+            promptResult.name = promptResult['project-name'] || data.name;
+            promptResult.author = promptResult.author || data.author;
+
+            promptResult.simpleName = promptResult.name.replace(/\s/gi, '-');
+
+            promptResult.databaseName = inflect.underscore(promptResult.simpleName);
+
+            promptResult.version = version;
+
+            let dirname = promptResult.name.replace(/[^A-Za-z0-9-_]/gi, '-').toLowerCase();
+
+            logger.info(`Creating directory "${colors.bold(dirname)}"...`);
+
+            if (fs.existsSync('./' + dirname)) {
+                logger.error(`Directory "${colors.bold(dirname)}" already exists, try a different project name`);
+                callback(null);
+            }
+
+            fs.mkdirSync('./' + dirname);
+
+            logger.info(`Copying Nodal directory structure and files...`);
+
+            fs.copy(rootPath + '/../../src', './' + dirname, function (err) {
+                if (err) {
+                    return callback(err);
+                }
+
+                let dot = require('dot');
+
+                dot.templateSettings.strip = false;
+                dot.templateSettings.varname = 'data';
+
+                // Write .env
+                // fs.writeFileSync('./' + dirname + '/.env', 'EXAMPLE_ENV_VAR=hello');
+
+                fs.writeFileSync('./' + dirname + '/package.json', dot.template(
+                    fs.readFileSync(rootPath + '/../templates/package.json.jst').toString()
+                )(promptResult));
+
+                fs.writeFileSync('./' + dirname + '/README.md', dot.template(
+                    fs.readFileSync(rootPath + '/../templates/README.md.jst').toString()
+                )(promptResult));
+
+                // read in the dbjson template, replace the development database name
+                // generate new config/db.json in the generated app
+                // NOTE: The db.json is intentionally not conditionally wrapped based
+                // on DB support since if users want to enable it later, worse case it
+                // defaults to an underscored version  <appname>_development
+                let dbjson = JSON.parse(fs.readFileSync(rootPath + '/../templates/db.json'));
+                dbjson.development.main.database = promptResult.databaseName + '_development';
+                dbjson.test.main.database = promptResult.databaseName + '_test';
+                fs.writeFileSync('./' + dirname + '/config/db.json', JSON.stringify(dbjson, null, 2));
+
+                let copyNodeModules = [
+                    'cli', 
+                    'core', 
+                    'test', 
+                    'node_modules',
+                    'package.json'
+                ];
+
+                async.series(
+                    copyNodeModules.map(m => {
+                        return (callback) => {
+                            logger.info(`Copying ${m}...`);
+                            fs.copy(
+                                path.join(rootPath, '..', '..', m),
+                                path.join(process.cwd(), dirname, 'node_modules', 'nodal', m),
+                                callback
+                            );
+                        };
+                    }),
+                    (err) => {
+                        if (err) {
+                            callback(err);
+                        }
+                        if (!data.ignoreOutput) {
+                            logger.info(colors.bold.green('All done!'));
+                            logger.info(`Your new Nodal project, ${colors.bold(promptResult.name)}, is ready to go! :)`);
+                            logger.info(`Have fun ${promptResult.author}, and check out https://github.com/keithwhor/nodal for the most up-to-date Nodal information`);
+                            logger.info(`${colors.bold('Pro tip: ')} You can try running your server right away with: $ cd ${dirname} && nodal s`);                        
+                        }
+                        callback(null);
+                    }
+                );
+            });
+        });
     }
-
-  }
-
-  return NewCommand;
-
-})();
+}
+module.exports = NewCommand;

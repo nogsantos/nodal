@@ -1,14 +1,14 @@
 {
   "name": "{{= data.simpleName }}",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "{{= data.name }}",
   "author": "{{= data.author }}",
   "main": "cluster.js",
   "engines": {
-    "node": "6.0.0"
+    "node": ">= 6.0.0"
   },
-  "dependencies": {
-    "nodal": "https://github.com/nogsantos/nodal.git"
+  "dependencies": {   
+    "nodal": "git@github.com:nogsantos/nodal.git"
   },
   "devDependencies": {
     "chai": "~3.5.0",
@@ -16,6 +16,8 @@
   },
   "scripts": {
     "test": "mocha ./test/runner.js",
+    "tdd": "mocha ./test/runner.js --reporter min --watch",
+    "env-test": "mocha ./test/runner.js --full-trace",
     "start": "node cluster.js",
     "worker": "node worker.js"
   },

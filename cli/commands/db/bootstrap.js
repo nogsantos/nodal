@@ -1,34 +1,29 @@
-module.exports = (() => {
-
-  'use strict';
-
-  const Command = require('cmnd').Command;
-
-  class DBBootstrapCommand extends Command {
-
+'use strict';
+const Command = require('cmnd').Command;
+/**
+ * 
+ */
+class DBBootstrapCommand extends Command {
+    /**
+     * 
+     */
     constructor() {
-
-      super('db', 'bootstrap');
-
+        super('db', 'bootstrap');
     }
-
+    /**
+     * 
+     */
     help() {
-
-      return {
-        description: 'Runs db:drop, db:create, db:prepare, db:migrate, db:seed',
-      };
-
+        return {
+            description: 'Runs db:drop, db:create, db:prepare, db:migrate, db:seed',
+        };
     }
-
+    /**
+     * 
+     */
     run(args, flags, vflags, callback) {
-
-      const bootstrapper = require('../../../core/my/bootstrapper.js');
-      bootstrapper.bootstrap(callback);
-
+        const bootstrapper = require('../../../core/my/bootstrapper.js');
+        bootstrapper.bootstrap(callback);
     }
-
-  }
-
-  return DBBootstrapCommand;
-
-})();
+}
+module.exports = DBBootstrapCommand;

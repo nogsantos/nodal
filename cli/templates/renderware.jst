@@ -1,20 +1,18 @@
-module.exports = (function() {
-
-  "use strict";
-
-  const Nodal = require('nodal');
-
-  class {{= data.name }}Renderware {
-
+"use strict";
+const Nodal = require('nodal');
+/**
+ * Class: {{= data.name }}
+ *
+ * @author {{=data.author }}
+ * @since {{=data.since }}  
+ */
+class {{= data.name }}Renderware {
+    /**
+     *
+     */
     exec(controller, data, callback) {
-
-      callback(null, data);
-      return false;
-
+        callback(null, data);
+        return false;
     }
-
-  }
-
-  return {{= data.name }}Renderware;
-
-})();
+}
+module.exports = {{= data.name }}Renderware;
