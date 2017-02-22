@@ -24,25 +24,31 @@ class Model {
         this.__load__(modelData, fromStorage);
     }
     /**
-     * Finds a model with a provided id, otherwise returns a notFound service.error.
-     * @param {number} id The id of the model you're looking for
-     * @param {function({Error} err, {Nodal.Model} model)} callback The callback to execute upon completion
+     * Finds a model with a provided id, otherwise returns a notFound service.error.     
+     * 
+     * @static 
+     * @param {Object} field The id of the model or the object with model fields you're looking for
+     * @param {Function} callback callback The callback to execute upon completion {function({Error} err, {Nodal.Model} model)}
+     * @returns 
+     * 
+     * @memberOf Model
      */
-    static find(id, callback) {
+    static find(field, callback) {
         let db = this.prototype.db;
         // legacy support
         if (arguments.length === 3) {
             db = arguments[0];
-            id = arguments[1];
+            field = arguments[1];
             callback = arguments[2];
         }
+        let field_to_find = (typeof field === "object") ? field : {
+            id: field
+        };
         return new Composer(this)
-            .where({
-                id: id
-            })
+            .where(field_to_find)
             .end((err, models) => {
                 if (!err && !models.length) {
-                    let err = new Error(`service.error.find_id__{name:${this.name},id:${id}}`);
+                    let err = new Error(`service.error.find_id__{name:${this.name},id:${field}}`);
                     err.notFound = true;
                     return callback(err);
                 }
