@@ -7,7 +7,7 @@ const path = require('path');
 class TestRunner {
     /**
      * Load file to tests
-     * 
+     *
      * @param String dir The directory to files to test
      * @param Include router Load the app routers
      * @param Array ordered_files_to_test An ordered list to make the test
@@ -26,7 +26,7 @@ class TestRunner {
                     if (!path.extname(filename) && filename[0] !== '.') {
                         let nextDir = path.resolve(dir, filename);
                         return fs.readdirSync(nextDir).forEach(addTest(nextDir));
-                    }                    
+                    }
                     let Test = require(path.resolve(dir, filename));
                     tests.push(new Test(this));
                 };
@@ -35,10 +35,10 @@ class TestRunner {
             fs.readdirSync(testDir).forEach(addTest(testDir));
         }
         this.router = router;
-        this._tests = tests; // array 
+        this._tests = tests; // array
     }
     /**
-     * Mocha, do the tests 
+     * Mocha, do the tests
      */
     start(verb) {
         this._tests.forEach(t => {

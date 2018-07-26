@@ -1,41 +1,56 @@
- 'use strict';
- const EndpointRequest = require('./endpoint_request.js');
- /**
-  * Test
+'use strict';
+
+const EndpointRequest = require('./endpoint_request.js');
+
+class Test {
+
+  constructor(testRunner) {
+
+    this._data = {};
+    this.testRunner = testRunner;
+    Object.defineProperty(this, 'router', {get: () => this.testRunner.router});
+
+  }
+
+  __test__(verb) {
+
+    describe(this.constructor.name, () => {
+
+      this.before && before(done => this.before(done));
+      this.after && after(done => this.after(done));
+
+      this.test(verb);
+
+    });
+
+  }
+
+  set(key, value) {
+    return this._data[key] = value;
+  }
+
+  unset(key) {
+    delete this._data[key];
+  }
+
+  get(key, defaultValue) {
+    return this._data.hasOwnProperty(key) ? this._data[key] : defaultValue;
+  }
+
+  test() {}
+
+  /**
+  * Creates a new MockRequest object (emulates an HTTP request)
+  * @param {string} path The path you wish to hit
+  * @param {Object} query The query parameters you wish to pass
+  * @return {Nodal.EndpointRequest}
   */
- class Test {
-     /**
-      * 
-      */
-     constructor(testRunner) {
-         this.testRunner = testRunner;         
-         Object.defineProperty(this, 'router', {
-             get: () => this.testRunner.router
-         });
-     }
-     /**
-      * 
-      */
-     __test__(verb) {
-         describe(this.constructor.name, () => {
-             this.before && before(this.before.bind(this, verb));
-             this.test(verb);
-             this.after && after(this.after.bind(this, verb));
-         });
-     }
-     /**
-      * 
-      */
-     test() {}
-     /**
-      * Creates a new MockRequest object (emulates an HTTP request)
-      * @param {string} path The path you wish to hit
-      * @param {Object} query The query parameters you wish to pass
-      * @param {String} method The request method: POST, PUT, DELETE (body params) or empty===GET (Query params)
-      * @return {Nodal.EndpointRequest}
-      */
-     endpoint(path, query, method) {     
-         return new EndpointRequest(this.router, path, query, method);
-     }
- }
- module.exports = Test;
+  endpoint(path, query) {
+
+    return new EndpointRequest(this.router, path, query);
+
+  }
+
+}
+
+module.exports = Test;

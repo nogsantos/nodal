@@ -1,7 +1,7 @@
 'use strict';
 const Nodal = require('nodal');
-/** 
- * Include this file to enable Model relationships 
+/**
+ * Include this file to enable Model relationships
  *
  * For example...
  *   const Post = Nodal.require('app/models/post.js');

@@ -1,11 +1,11 @@
 'use strict';
 const Nodal = require('nodal');
 /**
- * 
+ *
  */
 class ExampleTest extends Nodal.mocha.Test {
 
-    test(expect) {
+    it('Should compare 1 and 1', () => {
 
         it('Should compare 1 and 1', () => {
             expect(1).to.equal(1);

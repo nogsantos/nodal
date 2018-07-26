@@ -2,11 +2,11 @@
 const Nodal = require('nodal');
 const zlib = require('zlib');
 /**
- * 
+ *
  */
 class GzipRenderware {
     /**
-     * 
+     *
      */
     exec(controller, data, callback) {
         let contentType = controller.getHeader('Content-Type', '').split(';')[0];

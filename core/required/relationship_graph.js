@@ -5,295 +5,293 @@ let __id__ = 0;
 
 class RelationshipPath {
 
-    constructor(path) {
-        this.path = path;
+  constructor(path) {
+    this.path = path;
+  }
+
+  toString() {
+    return this.path.join(' <-> ');
+  }
+
+  joinName(reverse) {
+
+    let path = [].slice.call(this.path);
+
+    if (reverse) {
+      path = path.reverse();
     }
 
-    toString() {
-        return this.path.join(' <-> ');
+    let names = [];
+
+    while (path.length > 1) {
+      let node = path.pop();
+      let edge = path.pop();
+      names.push(edge.hasChild(node) ? edge.options.name : edge.options.as);
     }
 
-    joinName(reverse) {
+    return names.join('__');
 
-        let path = [].slice.call(this.path);
+  }
 
-        if (reverse) {
-            path = path.reverse();
-        }
+  add(node, edge) {
+    return new this.constructor([node, edge].concat(this.path));
+  }
 
-        let names = [];
+  getModel() {
+    return this.path[0].Model;
+  }
 
-        while (path.length > 1) {
-            let node = path.pop();
-            let edge = path.pop();
-            names.push(edge.hasChild(node) ? edge.options.name : edge.options.as);
-        }
-
-        return names.join('__');
-
+  multiple() {
+    for (let i = 1; i < this.path.length; i += 2) {
+      let edge = this.path[i];
+      let node = this.path[i - 1];
+      if (edge.hasChild(node) && edge.options.multiple) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    add(node, edge) {
-        return new this.constructor([node, edge].concat(this.path));
+  immediateMultiple() {
+    let node = this.path[0];
+    let edge = this.path[1];
+    if (edge.hasChild(node) && edge.options.multiple) {
+      return true;
     }
+    return false;
+  }
 
-    getModel() {
-        return this.path[0].Model;
-    }
+  joins(alias, firstTable) {
 
-    multiple() {
-        for (let i = 1; i < this.path.length; i += 2) {
-            let edge = this.path[i];
-            let node = this.path[i - 1];
-            if (edge.hasChild(node) && edge.options.multiple) {
-                return true;
-            }
-        }
-        return false;
-    }
+    let node;
+    let i = 0;
+    return this.path.slice().reverse().reduce((joins, item) => {
 
-    immediateMultiple() {
-        let node = this.path[0];
-        let edge = this.path[1];
-        if (edge.hasChild(node) && edge.options.multiple) {
-            return true;
-        }
-        return false;
-    }
+      if (item instanceof RelationshipNode) {
+        node = item;
+        return joins;
+      }
 
-    joins(alias, firstTable) {
+      let edge = item;
 
-        let node;
-        let i = 0;
-        return this.path.slice().reverse().reduce((joins, item) => {
+      let join = {
+        joinTable: edge.opposite(node).Model.table(),
+        prevTable: joins[joins.length - 1] ? joins[joins.length - 1].joinAlias : (firstTable || null),
+      };
 
-            if (item instanceof RelationshipNode) {
-                node = item;
-                return joins;
-            }
+      if (edge.hasChild(node)) {
+        join.prevColumn = edge.options.via;
+        join.joinColumn = edge.options.using;
+        join.joinAlias = edge.options.name;
+      } else {
+        join.prevColumn = edge.options.using;
+        join.joinColumn = edge.options.via;
+        join.joinAlias = edge.options.as;
+      }
 
-            let edge = item;
+      join.joinAlias = alias ? `${alias}${++i}` : join.joinAlias;
 
-            let join = {
-                joinTable: edge.opposite(node).Model.table(),
-                prevTable: joins[joins.length - 1] ? joins[joins.length - 1].joinAlias : (firstTable || null),
-            };
+      joins.push(join);
 
-            if (edge.hasChild(node)) {
-                join.prevColumn = edge.options.via;
-                join.joinColumn = 'id';
-                join.joinAlias = edge.options.name;
-            } else {
-                join.prevColumn = 'id';
-                join.joinColumn = edge.options.via;
-                join.joinAlias = edge.options.as;
-            }
+      return joins;
 
-            join.joinAlias = alias ? `${alias}${++i}` : join.joinAlias;
+    }, []);
 
-            joins.push(join);
-
-            return joins;
-
-        }, []);
-
-    }
+}
 
 }
 
 class RelationshipNode {
 
-    constructor(Graph, Model) {
-        this.Graph = Graph;
-        this.Model = Model;
-        this.edges = [];
+  constructor(Graph, Model) {
+    this.Graph = Graph;
+    this.Model = Model;
+    this.edges = [];
+  }
+
+  toString() {
+    return `[Node: ${this.Model.name}]`;
+  }
+
+  joinsTo(Model, options) {
+
+    if (!Model.name) {
+      // Sanity check for circular dependency resolution
+      return null;
     }
 
-    toString() {
-        return `[Node: ${this.Model.name}]`;
+    options = options || {};
+
+    options.multiple = !!options.multiple;
+    options.as = options.as || (options.multiple ? `${inflect.pluralize(inflect.camelize(this.Model.name, false))}` : `${inflect.camelize(this.Model.name, false)}`);
+    options.name = options.name || `${inflect.camelize(Model.name, false)}`;
+    options.via = options.via || `${inflect.underscore(options.name)}_id`;
+    options.using = options.using || `id`;
+
+    let parentNode = this.Graph.of(Model);
+    let edge = this.edges.filter(e => e.parent === parentNode && e.options.name === options.name).pop();
+
+    if (!edge) {
+      edge = new RelationshipEdge(parentNode, this, options);
     }
 
-    joinsTo(Model, options) {
+    return edge;
 
-        if (!Model.name) {
-            // Sanity check for circular dependency resolution
-            return null;
-        }
+  }
 
-        options = options || {};
+  childEdges() {
+    return this.edges.filter(edge => edge.parent === this);
+  }
 
-        options.multiple = !!options.multiple;
-        options.as = options.as || (options.multiple ? `${inflect.pluralize(inflect.camelize(this.Model.name, false))}` : `${inflect.camelize(this.Model.name, false)}`);
-        options.name = options.name || `${inflect.camelize(Model.name, false)}`;
-        options.via = options.via || `${inflect.underscore(options.name)}_id`;
+  cascade() {
 
-        let parentNode = this.Graph.of(Model);
-        let edge = this.edges.filter(e => e.parent === parentNode && e.options.name === options.name).pop();
+    let queue = this.childEdges();
+    let paths = queue.map(e => new RelationshipPath([e.child, e, e.parent]));
 
-        if (!edge) {
-            edge = new RelationshipEdge(parentNode, this, options);
-        }
+    let i = 0;
+    while (queue.length) {
 
-        return edge;
+      let edge = queue.shift();
+      let curPath = paths[i++];
 
-    }
+      let nextEdges = edge.child.childEdges();
+      queue = queue.concat(nextEdges);
 
-    childEdges() {
-        return this.edges.filter(edge => edge.parent === this);
-    }
-
-    cascade() {
-
-        let queue = this.childEdges();
-        let paths = queue.map(e => new RelationshipPath([e.child, e, e.parent]));
-
-        let i = 0;
-        while (queue.length) {
-
-            let edge = queue.shift();
-            let curPath = paths[i++];
-
-            let nextEdges = edge.child.childEdges();
-            queue = queue.concat(nextEdges);
-
-            paths = paths.concat(nextEdges.map(e => curPath.add(e.child, e)));
-
-        }
-
-        return paths;
+      paths = paths.concat(nextEdges.map(e => curPath.add(e.child, e)));
 
     }
 
-    findExplicit(pathname) {
+    return paths;
 
-        let names = pathname.split('__');
-        let node = this;
-        let path = new RelationshipPath([node]);
+  }
+
+  findExplicit(pathname) {
+
+    let names = pathname.split('__');
+    let node = this;
+    let path = new RelationshipPath([node]);
 
 
-        while (names.length) {
+    while (names.length) {
 
-            let name = names.shift();
+      let name = names.shift();
 
-            let edges = node.edges.filter(edge => {
-                return (edge.hasChild(node) && edge.options.name === name) || edge.options.as === name;
-            });
+      let edges = node.edges.filter(edge => {
+        return (edge.hasChild(node) && edge.options.name === name) || edge.options.as === name;
+      });
 
-            if (edges.length === 0) {
-                return null;
-            }
-
-            let edge = edges.pop();
-            let nextNode = edge.opposite(node);
-
-            path = path.add(nextNode, edge);
-            node = nextNode;
-
-        }
-
-        return path;
-
-    }
-
-    find(name) {
-
-        let queue = this.edges
-            .slice()
-            .map(edge => {
-                return {
-                    edge: edge,
-                    path: new RelationshipPath([this])
-                };
-            });
-
-        let traversed = {};
-
-        while (queue.length) {
-
-            let item = queue[0];
-            let curEdge = item.edge;
-            let path = item.path;
-            let node;
-
-            traversed[curEdge.id] = true;
-
-            let curNode = path.path[0];
-            node = curEdge.opposite(curNode);
-
-            if ((curEdge.hasChild(curNode) && curEdge.options.name === name) || curEdge.options.as === name) {
-                return path.add(node, curEdge);
-            }
-
-            queue = queue.slice(1).concat(
-                node.edges
-                .filter(edge => !traversed[edge.id])
-                .map(edge => {
-                    return {
-                        edge: edge,
-                        path: path.add(node, curEdge)
-                    };
-                })
-            );
-
-        }
-
+      if (edges.length === 0) {
         return null;
+      }
+
+      let edge = edges.pop();
+      let nextNode = edge.opposite(node);
+
+      path = path.add(nextNode, edge);
+      node = nextNode;
 
     }
+
+    return path;
+
+  }
+
+  find(name) {
+
+    let queue = this.edges
+      .slice()
+      .map(edge => {
+        return {edge: edge, path: new RelationshipPath([this])}
+      });
+
+    let traversed = {};
+
+    while (queue.length) {
+
+      let item = queue[0];
+      let curEdge = item.edge;
+      let path = item.path;
+      let node;
+
+      traversed[curEdge.id] = true;
+
+      let curNode = path.path[0];
+      node = curEdge.opposite(curNode);
+
+      if ((curEdge.hasChild(curNode) && curEdge.options.name === name) || curEdge.options.as === name) {
+        return path.add(node, curEdge);
+      }
+
+      queue = queue.slice(1).concat(
+        node.edges
+          .filter(edge => !traversed[edge.id])
+          .map(edge => {
+            return {
+              edge: edge,
+              path: path.add(node, curEdge)
+            };
+          })
+      );
+
+    }
+
+    return null;
+
+  }
 
 }
 
 class RelationshipEdge {
 
-    constructor(parent, child, options) {
+  constructor(parent, child, options) {
 
-        this.id = ++__id__;
-        this.parent = parent;
-        this.child = child;
-        this.options = options;
+    this.id = ++__id__;
+    this.parent = parent;
+    this.child = child;
+    this.options = options;
 
-        parent.edges.push(this);
-        child.edges.push(this);
+    parent.edges.push(this);
+    child.edges.push(this);
 
-    }
+  }
 
-    toString() {
-        return `[Edge: ${this.parent.Model.name}, ${this.child.Model.name}]`;
-    }
+  toString() {
+    return `[Edge: ${this.parent.Model.name}, ${this.child.Model.name}]`;
+  }
 
-    hasChild(child) {
-        return this.child === child;
-    }
+  hasChild(child) {
+    return this.child === child;
+  }
 
-    hasParent(parent) {
-        return this.parent === parent;
-    }
+  hasParent(parent) {
+    return this.parent === parent;
+  }
 
-    opposite(node) {
-        let opposite = this.child === node ? this.parent : (this.parent === node ? this.child : null);
-        return opposite;
-    }
+  opposite(node) {
+    let opposite = this.child === node ? this.parent : (this.parent === node ? this.child : null);
+    return opposite;
+  }
 
 }
 
 class RelationshipGraph {
 
-    constructor() {
-            this.nodes = [];
-            this.edges = [];
-        }
+  constructor() {
+    this.nodes = [];
+    this.edges = [];
+  }
 
-        of (Model) {
+  of(Model) {
 
-            let node = this.nodes.filter(n => n.Model === Model).pop();
-            if (!node) {
-                node = new RelationshipNode(this, Model);
-                this.nodes.push(node);
-            }
+    let node = this.nodes.filter(n => n.Model === Model).pop();
+    if (!node) {
+      node = new RelationshipNode(this, Model);
+      this.nodes.push(node);
+    }
 
-            return node;
+    return node;
 
-        }
+  }
 
 }
 

@@ -1,7 +1,7 @@
 'use strict';
 const Nodal = require('nodal');
-/** 
- * Forces www. on naked domain 
+/**
+ * Forces www. on naked domain
  */
 class ForceWWWMiddleware {
     /**

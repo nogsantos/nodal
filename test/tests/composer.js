@@ -1,6 +1,6 @@
-module.exports = (function(Nodal) {
+'use strict';
 
-  'use strict';
+module.exports = Nodal => {
 
   const async = require('async');
 
@@ -302,6 +302,24 @@ module.exports = (function(Nodal) {
           expect(children).to.be.an.instanceOf(Nodal.ModelArray);
           expect(children.length).to.equal(100);
           expect(children[0].get('id')).to.equal(100);
+          done();
+
+        });
+
+    });
+
+    it('Should orderBy a joined property properly (DESC)', function(done) {
+
+      Child.query()
+        .join('parent')
+        .orderBy('parent__name', 'DESC')
+        .end((err, children) => {
+
+          expect(err).to.equal(null);
+          expect(children).to.be.an.instanceOf(Nodal.ModelArray);
+          expect(children.length).to.equal(100);
+          expect(children[0].joined('parent').get('name')).to.equal('Zoolander');
+          expect(children[99].joined('parent').get('name')).to.equal('Albert');
           done();
 
         });
@@ -946,6 +964,28 @@ module.exports = (function(Nodal) {
 
     });
 
+    it('Should update all childrens ages', (done) => {
+
+      Child.query().orderBy('id').end((err, children) => {
+
+        let ages = children.map(c => c.get('age'));
+
+        Child.query()
+          .orderBy('id')
+          .update({age: age => `${age} + 10`}, (err, children) => {
+
+            children.forEach((child, i) => {
+              expect(child.get('age')).to.equal(ages[i] + 10);
+            });
+
+            done();
+
+          });
+
+      });
+
+    });
+
     it('Should update all parents names and join children', (done) => {
 
       Parent.query()
@@ -1109,6 +1149,26 @@ module.exports = (function(Nodal) {
 
     });
 
+    it('Should join multiple properties from a deeply joined property', done => {
+
+      Parent.query()
+        .join('incomingFriendships')
+        .join('incomingFriendships__fromParent')
+        .join('incomingFriendships__fromParent__pets')
+        .join('incomingFriendships__fromParent__children')
+        .first((err, parent) => {
+
+          expect(err).to.not.exist;
+          expect(parent).to.exist;
+          expect(parent.joined('incomingFriendships')[0].joined('fromParent').joined('pets')).to.exist;
+          expect(parent.joined('incomingFriendships')[0].joined('fromParent').joined('children')).to.exist;
+
+          done();
+
+        });
+
+    });
+
     it('Should group by shirt', done => {
 
       Parent.query()
@@ -1256,4 +1316,4 @@ module.exports = (function(Nodal) {
 
   });
 
-});
+};

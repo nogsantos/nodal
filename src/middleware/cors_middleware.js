@@ -1,11 +1,11 @@
 'use strict';
 const Nodal = require('nodal');
 /**
- * 
+ *
  */
 class CORSMiddleware {
     /**
-     * 
+     *
      */
     exec(controller, callback) {
         controller.allowOrigin('*');

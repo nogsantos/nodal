@@ -1,11 +1,11 @@
 'use strict';
 const Nodal = require('nodal');
 /**
- *  Forces HTTPS 
+ *  Forces HTTPS
  */
 class ForceHTTPSMiddleware {
     /**
-     * 
+     *
      */
     exec(controller, callback) {
         let headers = controller._requestHeaders;
